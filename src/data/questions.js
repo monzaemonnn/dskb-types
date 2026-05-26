@@ -1,21 +1,21 @@
 export const questions = [
-  // Axis D: Distance (Danger/Public/Open [+] vs. deep/Private/Room [-])
+  // --- Axis D: Distance (Danger/Public/Open [+] vs. deep/Private/Room [-]) ---
   {
     id: 1,
     axis: 'D',
     type: '+',
     text: {
-      en: "I am excited by the idea of sharing intimate moments in unconventional, slightly risky places rather than just a quiet bedroom.",
-      ja: "静かな寝室だけでなく、非日常的で少しスリルのある（見つかるかもしれない）場所での親密な時間に興奮を覚える。"
+      en: "I find the possibility of being discovered or seen by others adding a thrilling edge to intimate moments.",
+      ja: "親密な時間を過ごしている時に、誰かに見つかるかもしれないという可能性にスリルを感じる。"
     }
   },
   {
     id: 2,
     axis: 'D',
-    type: '-',
+    type: '+',
     text: {
-      en: "I feel most comfortable and secure when intimacy is kept completely private and isolated from the outside world.",
-      ja: "外の世界から完全に隔離され、二人きりになれる密室の中こそが最も安心でき、深く没入できると感じる。"
+      en: "I enjoy exploring unfamiliar or slightly risky environments for physical intimacy.",
+      ja: "普段とは違う、少しリスクのある場所で親密な時間を楽しむことに惹かれる。"
     }
   },
   {
@@ -23,8 +23,8 @@ export const questions = [
     axis: 'D',
     type: '+',
     text: {
-      en: "The thrill of potentially being seen or heard increases my excitement significantly.",
-      ja: "誰かに見られたり聞かれたりするかもしれないというスリル（背徳感）が、自分の興奮を大きく高める。"
+      en: "The idea of expressing affection or desire openly, where others might notice, is appealing to me.",
+      ja: "誰かの目にとまるかもしれない場所で、愛情や欲望をオープンに表現することに魅力を感じる。"
     }
   },
   {
@@ -32,122 +32,194 @@ export const questions = [
     axis: 'D',
     type: '-',
     text: {
-      en: "I prefer a dark, locked room where we can fully immerse in each other without any external distractions.",
-      ja: "鍵のかかった暗い部屋など、外部の干渉をすべて排除した環境で相手と一対一で深く向き合いたい。"
+      en: "I feel most relaxed and focused when I am in a completely private, locked room with my partner.",
+      ja: "パートナーと完全にプライベートで、外の目がない鍵のかかった空間にいる時が最もリラックスでき、没入できる。"
     }
   },
-
-  // Axis S: Stimulus (Shape/Physical/Visual [+] vs. story/Context/Narrative [-])
   {
     id: 5,
-    axis: 'S',
-    type: '+',
+    axis: 'D',
+    type: '-',
     text: {
-      en: "For me, physical attributes and visual/tactile stimulation are the primary drivers of my attraction.",
-      ja: "相手の肉体的な魅力や、視覚・触覚的な直接の刺激こそが、自分の性的欲求や魅力を引き出す最大の要素である。"
+      en: "The thought of anyone else being nearby during a private moment makes me lose my arousal or focus.",
+      ja: "親密な時間を過ごしている最中に、近くに誰かがいるかもしれないと考えると、集中が削がれたり気分が冷めたりする。"
     }
   },
   {
     id: 6,
-    axis: 'S',
+    axis: 'D',
     type: '-',
     text: {
-      en: "I need a specific context, relationship narrative, or scenario-play to feel fully engaged and excited.",
-      ja: "二人の関係性やストーリー、シチュエーションの設定（役割分担やシチュエーションプレイ）があって初めて強く興奮する。"
+      en: "I prefer to keep my intimate life strictly isolated from the outside world.",
+      ja: "自分の親密な関係や体験は、外の世界から厳密に隔離された状態にしておくことを好む。"
     }
   },
+
+  // --- Axis S: Stimulus (Shape/Physical/Visual [+] vs. story/Context/Narrative [-]) ---
   {
     id: 7,
     axis: 'S',
     type: '+',
     text: {
-      en: "I appreciate visual aesthetics (like clothing, body curves, light play) more than the emotional build-up.",
-      ja: "関係性の構築や感情の高まりよりも、衣装やライティング、肉体の輪郭といった「視覚的な美しさやエロティシズム」を重視する。"
+      en: "Physical appearance and visual aesthetics are the primary triggers for my initial attraction.",
+      ja: "自分にとって、最初の惹かれるきっかけとして最も重要なのは、身体的な外見や視覚的な魅力である。"
     }
   },
   {
     id: 8,
     axis: 'S',
-    type: '-',
-    text: {
-      en: "The verbal tension, teasing, or roleplay scenario is far more important to me than the physical surroundings.",
-      ja: "言葉による駆け引き、言葉攻め、あるいは設定されたルールといった「精神的な文脈（ストーリー）」の方が、肉体そのものより重要だ。"
-    }
-  },
-
-  // Axis K: Kankei (Kanshu/Dominant/Lead [+] vs. kachiku/Submissive/Yield [-])
-  {
-    id: 9,
-    axis: 'K',
     type: '+',
     text: {
-      en: "I prefer to take the lead, direct the flow, and maintain control during intimate situations.",
-      ja: "自分が主導権を握り、流れをコントロールし、相手を意のままに動かすことに最も快感を覚える。"
+      en: "I am highly responsive to direct tactile sensations and the specific physical features of my partner.",
+      ja: "パートナーの特定の身体的特徴や、直接的な触覚の刺激に対して非常に強く反応する。"
+    }
+  },
+  {
+    id: 9,
+    axis: 'S',
+    type: '+',
+    text: {
+      en: "I find that observing my partner's body or clothing choices provides a stronger sense of excitement than deep conversations.",
+      ja: "パートナーの身体のラインや服装を観察することの方が、深い対話よりも強い興奮をもたらすことがある。"
     }
   },
   {
     id: 10,
-    axis: 'K',
+    axis: 'S',
     type: '-',
     text: {
-      en: "I enjoy yielding control, letting my partner lead, and placing myself completely in their hands.",
-      ja: "主導権を相手に委ね、すべてを相手のペースや指示に任せて、受け身で身を捧げることに喜びを感じる。"
+      en: "A compelling scenario, roleplay, or a specific relationship dynamic is crucial for me to feel truly engaged.",
+      ja: "本当の意味で夢中になるためには、魅力的なシチュエーションや役割設定、または二人の関係性の文脈が不可欠である。"
     }
   },
   {
     id: 11,
-    axis: 'K',
-    type: '+',
+    axis: 'S',
+    type: '-',
     text: {
-      en: "I get satisfaction from supervising and orchestrating the scenario to make it perfect.",
-      ja: "二人のシチュエーションを自分で「監修（デザイン）」し、自分のプラン通りに進行させることにやりがいを感じる。"
+      en: "Words, psychological teasing, and verbal tension arouse me more than purely physical stimulation.",
+      ja: "純粋な肉体的刺激よりも、言葉による駆け引きや心理的な焦らし、会話の緊張感の方が私を興奮させる。"
     }
   },
   {
     id: 12,
-    axis: 'K',
+    axis: 'S',
     type: '-',
     text: {
-      en: "I find comfort in being dominated, serving, or being devoted to my partner's desires.",
-      ja: "相手に尽くし、命じられ、あるいは支配されるという立場（被主導権）に安心感や強い興奮を覚える。"
+      en: "I need to understand the emotional backstory or the meaning behind an act to fully appreciate it.",
+      ja: "その行為を心から楽しむためには、その背景にある感情の動きや意味合いを理解する必要がある。"
     }
   },
 
-  // Axis B: Buddy (Broad/Polyamorous/Multiple [+] vs. beloved/Exclusive/One [-])
+  // --- Axis K: Kankei (Kanshu/Dominant/Lead [+] vs. kachiku/Submissive/Yield [-]) ---
   {
     id: 13,
-    axis: 'B',
+    axis: 'K',
     type: '+',
     text: {
-      en: "I am open to polyamorous dynamics, group interactions, or sharing experiences with multiple people.",
-      ja: "三人以上のグループ行動や、複数の人々と体験を共有すること、またはオープンな関係に興味がある（または抵抗がない）。"
+      en: "I naturally prefer to take charge and dictate the pace during intimate encounters.",
+      ja: "親密な状況においては、自然と自分が主導権を握り、ペースをコントロールしたいと思う。"
     }
   },
   {
     id: 14,
-    axis: 'B',
-    type: '-',
+    axis: 'K',
+    type: '+',
     text: {
-      en: "I want my partner's attention and devotion to be focused solely and exclusively on me.",
-      ja: "愛する人の関心や独占欲、執着心がすべて、他のだれでもなく「自分一人」だけに向いていてほしい。"
+      en: "Designing the scenario and seeing my partner react to my instructions gives me a deep sense of satisfaction.",
+      ja: "シチュエーションを自分で組み立て、パートナーが自分の指示にどう反応するかを見届けることに深い満足感を覚える。"
     }
   },
   {
     id: 15,
-    axis: 'B',
+    axis: 'K',
     type: '+',
     text: {
-      en: "I find variety and multiple connections more stimulating than sticking to just one person forever.",
-      ja: "一人の特定の相手とだけ生涯を過ごすよりも、多様なパートナーや複数人での関わりの方が刺激的で魅力的だと思う。"
+      en: "I feel most confident when I hold the authority and guide the overall experience.",
+      ja: "自分が決定権を持ち、体験全体をリードしている時に最も自信を感じる。"
     }
   },
   {
     id: 16,
+    axis: 'K',
+    type: '-',
+    text: {
+      en: "Surrendering control and letting my partner make all the decisions brings me comfort and pleasure.",
+      ja: "すべての決定権をパートナーに委ね、自分は身を任せることに安心感と喜びを感じる。"
+    }
+  },
+  {
+    id: 17,
+    axis: 'K',
+    type: '-',
+    text: {
+      en: "I find it deeply fulfilling to serve my partner's needs and follow their direct guidance.",
+      ja: "パートナーの欲求に尽くし、その直接的な導きに従うことに深い充実感を覚える。"
+    }
+  },
+  {
+    id: 18,
+    axis: 'K',
+    type: '-',
+    text: {
+      en: "I prefer to adopt a receptive role, reacting to what my partner initiates rather than initiating things myself.",
+      ja: "自分から何かを仕掛けるよりも、パートナーの行動に対して受動的に反応する役割を好む。"
+    }
+  },
+
+  // --- Axis B: Buddy (Broad/Polyamorous/Multiple [+] vs. beloved/Exclusive/One [-]) ---
+  {
+    id: 19,
+    axis: 'B',
+    type: '+',
+    text: {
+      en: "I can imagine myself feeling comfortable and enjoying casual intimacy without a committed romantic bond.",
+      ja: "深い恋愛感情を伴わないカジュアルな親密さであっても、自分はそれを心地よく楽しむことができると思う。"
+    }
+  },
+  {
+    id: 20,
+    axis: 'B',
+    type: '+',
+    text: {
+      en: "The idea of experiencing connections with multiple partners, or introducing variety into my relationships, is appealing to me.",
+      ja: "複数のパートナーと関係を持ったり、関係性に多様な変化を取り入れたりすることに魅力を感じる。"
+    }
+  },
+  {
+    id: 21,
+    axis: 'B',
+    type: '+',
+    text: {
+      en: "I believe it is possible to separate physical intimacy from exclusive, lifelong love.",
+      ja: "肉体的な親密さと、たった一人への生涯にわたる排他的な愛情は、分けて考えることが可能だと思う。"
+    }
+  },
+  {
+    id: 22,
     axis: 'B',
     type: '-',
     text: {
-      en: "I crave a single, deep, soul-bound connection where we belong exclusively to each other.",
-      ja: "たった一人の運命の相手と、お互いがお互いだけを激しく独占し合うような狭く深い関係（一対一の絆）を切望する。"
+      en: "I require a deep, serious, and committed emotional connection before I can fully enjoy physical intimacy.",
+      ja: "肉体的な親密さを心から楽しむためには、事前に深く真剣で、約束された精神的なつながりが必要である。"
+    }
+  },
+  {
+    id: 23,
+    axis: 'B',
+    type: '-',
+    text: {
+      en: "I crave a relationship where my partner and I are entirely and exclusively devoted only to each other.",
+      ja: "パートナーとお互いに、完全に自分たちだけの世界で排他的に愛し合う関係を強く望んでいる。"
+    }
+  },
+  {
+    id: 24,
+    axis: 'B',
+    type: '-',
+    text: {
+      en: "The thought of sharing my partner with anyone else, or being shared myself, is highly unappealing to me.",
+      ja: "パートナーを誰かと共有したり、自分が誰かと共有されたりするという考えは、私にとって非常に受け入れがたい。"
     }
   }
 ];

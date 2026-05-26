@@ -98,9 +98,7 @@ export default function QuizScreen({ questions, currentIdx, answers, onAnswer, o
       {/* Main question card */}
       <div className="question-card">
         <div>
-          <span className="question-tag">
-            {t.axisTags[currentQuestion.axis][lang]}
-          </span>
+
           <h2 className="question-text">
             {currentQuestion.text[lang]}
           </h2>

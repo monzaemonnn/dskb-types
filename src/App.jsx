@@ -193,10 +193,10 @@ export default function App() {
       axes[q.axis] += rawValue;
     });
 
-    // Translate sum [-8, 8] to percentage [0, 100]
+    // Translate sum [-12, 12] to percentage [0, 100]
     const calculatePct = (score) => {
-      // Map -8 to 0 and +8 to 100
-      return Math.round(((score - (-8)) / 16) * 100);
+      // Map -12 to 0 and +12 to 100
+      return Math.round(((score - (-12)) / 24) * 100);
     };
 
     const dPct = calculatePct(axes.D);
