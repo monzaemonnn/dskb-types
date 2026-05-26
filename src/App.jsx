@@ -6,19 +6,151 @@ import ResultsDashboard from './components/ResultsDashboard';
 import TypeGallery from './components/TypeGallery';
 import { questions } from './data/questions';
 
+const QUIZ_STORAGE_KEY = 'dskb-quiz-progress';
+
+function clampPercentage(value) {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) return null;
+  return Math.min(100, Math.max(0, Math.round(numericValue)));
+}
+
+function getSharedResultFromUrl() {
+  if (typeof window === 'undefined') return null;
+
+  const params = new URLSearchParams(window.location.search);
+  const resultCode = params.get('result');
+  if (!resultCode || !/^[dD][sS][kK][bB]$/.test(resultCode)) return null;
+
+  const dPct = clampPercentage(params.get('d'));
+  const sPct = clampPercentage(params.get('s'));
+  const kPct = clampPercentage(params.get('k'));
+  const bPct = clampPercentage(params.get('b'));
+
+  if ([dPct, sPct, kPct, bPct].some((value) => value === null)) return null;
+
+  const urlLang = params.get('lang');
+
+  return {
+    typeCode: resultCode,
+    percentages: { dPct, sPct, kPct, bPct },
+    lang: urlLang === 'en' ? 'en' : 'ja'
+  };
+}
+
+function loadSavedQuiz() {
+  if (typeof window === 'undefined') return null;
+
+  try {
+    const savedProgress = window.localStorage.getItem(QUIZ_STORAGE_KEY);
+    if (!savedProgress) return null;
+
+    const parsedProgress = JSON.parse(savedProgress);
+    const answers = parsedProgress?.answers;
+    const currentQuestionIdx = Number(parsedProgress?.currentQuestionIdx);
+
+    if (!answers || typeof answers !== 'object') return null;
+    if (!Number.isInteger(currentQuestionIdx) || currentQuestionIdx < 0 || currentQuestionIdx >= questions.length) return null;
+
+    return {
+      answers,
+      currentQuestionIdx,
+      lang: parsedProgress.lang === 'en' ? 'en' : 'ja'
+    };
+  } catch {
+    return null;
+  }
+}
+
+function saveQuizProgress(progress) {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(QUIZ_STORAGE_KEY, JSON.stringify(progress));
+}
+
+function clearSavedQuiz() {
+  if (typeof window === 'undefined') return;
+  window.localStorage.removeItem(QUIZ_STORAGE_KEY);
+}
+
+function clearResultUrl() {
+  if (typeof window === 'undefined') return;
+  window.history.replaceState(null, '', window.location.pathname);
+}
+
+function publishResultUrl(typeCode, percentages, lang) {
+  if (typeof window === 'undefined') return;
+
+  const params = new URLSearchParams({
+    result: typeCode,
+    d: String(percentages.dPct),
+    s: String(percentages.sPct),
+    k: String(percentages.kPct),
+    b: String(percentages.bPct),
+    lang
+  });
+
+  window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`);
+}
+
 export default function App() {
-  const [currentScreen, setCurrentScreen] = useState('welcome'); // welcome, quiz, loader, results, gallery
-  const [lang, setLang] = useState('ja'); // 'ja' or 'en'
+  const [initialAppState] = useState(() => {
+    const sharedResult = getSharedResultFromUrl();
+    const savedQuiz = loadSavedQuiz();
+
+    return {
+      sharedResult,
+      savedQuiz
+    };
+  });
+
+  const [currentScreen, setCurrentScreen] = useState(initialAppState.sharedResult ? 'results' : 'welcome'); // welcome, quiz, loader, results, gallery
+  const [lang, setLang] = useState(initialAppState.sharedResult?.lang || initialAppState.savedQuiz?.lang || 'ja'); // 'ja' or 'en'
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
   const [answers, setAnswers] = useState({}); // { [questionId]: value }
+  const [savedQuiz, setSavedQuiz] = useState(initialAppState.savedQuiz);
 
   // Result metrics
-  const [typeCode, setTypeCode] = useState('');
-  const [percentages, setPercentages] = useState({ dPct: 50, sPct: 50, kPct: 50, bPct: 50 });
+  const [typeCode, setTypeCode] = useState(initialAppState.sharedResult?.typeCode || '');
+  const [percentages, setPercentages] = useState(initialAppState.sharedResult?.percentages || { dPct: 50, sPct: 50, kPct: 50, bPct: 50 });
+
+  const persistQuizProgress = (nextAnswers, nextQuestionIdx, nextLang = lang) => {
+    const progress = {
+      answers: nextAnswers,
+      currentQuestionIdx: nextQuestionIdx,
+      lang: nextLang
+    };
+
+    saveQuizProgress(progress);
+    setSavedQuiz(progress);
+  };
+
+  const handleSetLang = (nextLang) => {
+    setLang(nextLang);
+
+    if (currentScreen === 'quiz' && Object.keys(answers).length > 0) {
+      persistQuizProgress(answers, currentQuestionIdx, nextLang);
+    }
+
+    if (currentScreen === 'results' && typeCode) {
+      publishResultUrl(typeCode, percentages, nextLang);
+    }
+  };
 
   const handleStartQuiz = () => {
+    clearSavedQuiz();
+    clearResultUrl();
+    setSavedQuiz(null);
     setAnswers({});
     setCurrentQuestionIdx(0);
+    setCurrentScreen('quiz');
+  };
+
+  const handleContinueQuiz = () => {
+    if (!savedQuiz) return;
+
+    clearResultUrl();
+    setAnswers(savedQuiz.answers);
+    setCurrentQuestionIdx(savedQuiz.currentQuestionIdx);
+    setLang(savedQuiz.lang);
     setCurrentScreen('quiz');
   };
 
@@ -28,18 +160,26 @@ export default function App() {
 
     if (proceed) {
       if (currentQuestionIdx < questions.length - 1) {
-        setCurrentQuestionIdx(currentQuestionIdx + 1);
+        const nextQuestionIdx = currentQuestionIdx + 1;
+        setCurrentQuestionIdx(nextQuestionIdx);
+        persistQuizProgress(updatedAnswers, nextQuestionIdx);
       } else {
         // Quiz finished! Calculate results
+        clearSavedQuiz();
+        setSavedQuiz(null);
         calculateResults(updatedAnswers);
         setCurrentScreen('loader');
       }
+    } else {
+      persistQuizProgress(updatedAnswers, currentQuestionIdx);
     }
   };
 
   const handleBack = () => {
     if (currentQuestionIdx > 0) {
-      setCurrentQuestionIdx(currentQuestionIdx - 1);
+      const previousQuestionIdx = currentQuestionIdx - 1;
+      setCurrentQuestionIdx(previousQuestionIdx);
+      persistQuizProgress(answers, previousQuestionIdx);
     }
   };
 
@@ -64,7 +204,9 @@ export default function App() {
     const kPct = calculatePct(axes.K);
     const bPct = calculatePct(axes.B);
 
-    setPercentages({ dPct, sPct, kPct, bPct });
+    const calculatedPercentages = { dPct, sPct, kPct, bPct };
+
+    setPercentages(calculatedPercentages);
 
     // Determine type code (uppercase if >= 50, lowercase if < 50)
     const dLetter = dPct >= 50 ? 'D' : 'd';
@@ -74,6 +216,7 @@ export default function App() {
 
     const calculatedCode = `${dLetter}${sLetter}${kLetter}${bLetter}`;
     setTypeCode(calculatedCode);
+    publishResultUrl(calculatedCode, calculatedPercentages, lang);
   };
 
   const handleLoaderFinished = () => {
@@ -81,12 +224,18 @@ export default function App() {
   };
 
   const handleReset = () => {
+    clearSavedQuiz();
+    clearResultUrl();
+    setSavedQuiz(null);
     setAnswers({});
     setCurrentQuestionIdx(0);
+    setTypeCode('');
+    setPercentages({ dPct: 50, sPct: 50, kPct: 50, bPct: 50 });
     setCurrentScreen('welcome');
   };
 
   const handleViewGallery = () => {
+    clearResultUrl();
     setCurrentScreen('gallery');
   };
 
@@ -104,14 +253,14 @@ export default function App() {
           {/* Language Switch */}
           <button 
             className={`btn-glass ${lang === 'ja' ? 'active' : ''}`} 
-            onClick={() => setLang('ja')}
+            onClick={() => handleSetLang('ja')}
             style={{ padding: '6px 12px', fontSize: '0.8rem' }}
           >
             日本語
           </button>
           <button 
             className={`btn-glass ${lang === 'en' ? 'active' : ''}`} 
-            onClick={() => setLang('en')}
+            onClick={() => handleSetLang('en')}
             style={{ padding: '6px 12px', fontSize: '0.8rem' }}
           >
             English
@@ -124,7 +273,9 @@ export default function App() {
         {currentScreen === 'welcome' && (
           <WelcomeScreen 
             onStart={handleStartQuiz} 
+            onContinue={handleContinueQuiz}
             lang={lang} 
+            hasSavedProgress={Boolean(savedQuiz)}
             onViewGallery={handleViewGallery}
           />
         )}

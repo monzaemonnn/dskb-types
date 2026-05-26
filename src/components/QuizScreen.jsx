@@ -1,7 +1,45 @@
+import { useEffect, useRef, useState } from 'react';
+
 export default function QuizScreen({ questions, currentIdx, answers, onAnswer, onBack, lang }) {
   const currentQuestion = questions[currentIdx];
   const progressPct = ((currentIdx) / questions.length) * 100;
   const currentSelectedValue = answers[currentQuestion.id] !== undefined ? answers[currentQuestion.id] : null;
+  const [pendingSelection, setPendingSelection] = useState(null);
+  const advanceTimerRef = useRef(null);
+  const displayedSelectedValue = pendingSelection?.questionId === currentQuestion.id
+    ? pendingSelection.value
+    : currentSelectedValue;
+
+  useEffect(() => {
+    return () => {
+      if (advanceTimerRef.current) {
+        window.clearTimeout(advanceTimerRef.current);
+      }
+    };
+  }, [currentQuestion.id]);
+
+  const handleSelectOption = (value) => {
+    if (advanceTimerRef.current) {
+      window.clearTimeout(advanceTimerRef.current);
+    }
+
+    setPendingSelection({ questionId: currentQuestion.id, value });
+    onAnswer(currentQuestion.id, value);
+
+    advanceTimerRef.current = window.setTimeout(() => {
+      setPendingSelection(null);
+      onAnswer(currentQuestion.id, value, true);
+    }, 220);
+  };
+
+  const handleBackClick = () => {
+    if (advanceTimerRef.current) {
+      window.clearTimeout(advanceTimerRef.current);
+    }
+
+    setPendingSelection(null);
+    onBack();
+  };
 
   const t = {
     progress: {
@@ -64,12 +102,12 @@ export default function QuizScreen({ questions, currentIdx, answers, onAnswer, o
         {/* Likert Scale input */}
         <div className="likert-scale">
           {options.map((opt) => {
-            const isSelected = currentSelectedValue === opt.value;
+            const isSelected = displayedSelectedValue === opt.value;
             return (
               <div
                 key={opt.value}
                 className={`likert-option ${opt.className} ${isSelected ? 'selected' : ''}`}
-                onClick={() => onAnswer(currentQuestion.id, opt.value)}
+                onClick={() => handleSelectOption(opt.value)}
               >
                 <div className={`likert-circle ${opt.size}`}>
                   {isSelected && (
@@ -91,7 +129,7 @@ export default function QuizScreen({ questions, currentIdx, answers, onAnswer, o
         {/* Navigation Footer */}
         <div className="quiz-footer">
           {currentIdx > 0 ? (
-            <button className="btn-glass" onClick={onBack}>
+            <button className="btn-glass" onClick={handleBackClick}>
               <span style={{ transform: 'scaleX(-1)', display: 'inline-block' }}>✦</span> {t.back[lang]}
             </button>
           ) : (

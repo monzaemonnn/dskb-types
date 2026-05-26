@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function WelcomeScreen({ onStart, lang, onViewGallery }) {
+export default function WelcomeScreen({ onStart, onContinue, lang, hasSavedProgress, onViewGallery }) {
   const [agreedDisclaimer, setAgreedDisclaimer] = useState(false);
 
   const t = {
@@ -67,6 +67,10 @@ export default function WelcomeScreen({ onStart, lang, onViewGallery }) {
     startBtn: {
       en: "Start Personality Test",
       ja: "診断を開始する"
+    },
+    continueBtn: {
+      en: "Continue Saved Quiz",
+      ja: "途中から再開する"
     },
     galleryBtn: {
       en: "Explore All 16 Types",
@@ -138,8 +142,14 @@ export default function WelcomeScreen({ onStart, lang, onViewGallery }) {
 
       {/* Action Buttons */}
       <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap' }}>
+        {hasSavedProgress && (
+          <button className="btn-primary" onClick={onContinue}>
+            {t.continueBtn[lang]}
+            <span>✦</span>
+          </button>
+        )}
         <button
-          className="btn-primary"
+          className={hasSavedProgress ? 'btn-glass' : 'btn-primary'}
           onClick={onStart}
           disabled={!agreedDisclaimer}
           style={{ opacity: agreedDisclaimer ? 1 : 0.4, cursor: agreedDisclaimer ? 'pointer' : 'not-allowed' }}

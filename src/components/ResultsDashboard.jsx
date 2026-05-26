@@ -7,6 +7,7 @@ export default function ResultsDashboard({ typeCode, dPct, sPct, kPct, bPct, lan
   const [activeTab, setActiveTab] = useState('overview');
   const [modalType, setModalType] = useState(null); // type code of type shown in modal
   const [copySuccess, setCopySuccess] = useState(false);
+  const [linkCopySuccess, setLinkCopySuccess] = useState(false);
   const canvasRef = useRef(null);
 
   if (!resultData) return <div>Type not found.</div>;
@@ -21,6 +22,7 @@ export default function ResultsDashboard({ typeCode, dPct, sPct, kPct, bPct, lan
     bestMatch: { en: "Best Match (Highest Chemistry)", ja: "最高相性 (最も居心地が良い)" },
     abyssMatch: { en: "Abyss Match (Obsessive/Addictive)", ja: "沼相性 (狂信的・依存しやすい)" },
     shareText: { en: "Copy Results for Twitter/SNS", ja: "診断結果をコピー (SNSシェア用)" },
+    copyLink: { en: "Copy Result Link", ja: "結果リンクをコピー" },
     downloadText: { en: "Download Profile Card (PNG)", ja: "プロフィール画像をダウンロード" },
     retake: { en: "Retake Quiz", ja: "もう一度診断する" },
     gallery: { en: "Explore All Types", ja: "16タイプ一覧へ" },
@@ -32,6 +34,7 @@ export default function ResultsDashboard({ typeCode, dPct, sPct, kPct, bPct, lan
   const handleCopyShareText = () => {
     const jpName = resultData.nameJP;
     const enName = resultData.nameEN;
+    const resultUrl = typeof window !== 'undefined' ? window.location.href : '';
 
     const text = `【16 DSKB Types (ドスケベ診断)】
 私の診断タイプは【${typeCode} : ${jpName} (${enName})】でした！
@@ -45,11 +48,20 @@ export default function ResultsDashboard({ typeCode, dPct, sPct, kPct, bPct, lan
 ✨ キャッチコピー: "${resultData.tagline[lang]}"
 
 #16DSKBTypes #DSKB診断
-テストはこちらから ➡️ (https://novelgame.jp/games/show/13811)`;
+テストはこちらから ➡️ ${resultUrl}`;
 
     navigator.clipboard.writeText(text).then(() => {
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
+    });
+  };
+
+  const handleCopyResultLink = () => {
+    if (typeof window === 'undefined') return;
+
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      setLinkCopySuccess(true);
+      setTimeout(() => setLinkCopySuccess(false), 2000);
     });
   };
 
@@ -399,6 +411,10 @@ export default function ResultsDashboard({ typeCode, dPct, sPct, kPct, bPct, lan
       <div className="glass-card actions-card">
         <button className="btn-primary" onClick={handleCopyShareText}>
           {copySuccess ? `✓ ${t.copied[lang]}` : t.shareText[lang]}
+        </button>
+
+        <button className="btn-glass" onClick={handleCopyResultLink}>
+          {linkCopySuccess ? `✓ ${t.copied[lang]}` : t.copyLink[lang]}
         </button>
         
         <button className="btn-glass" onClick={handleDownloadCard}>
