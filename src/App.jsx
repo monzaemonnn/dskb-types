@@ -254,14 +254,12 @@ export default function App() {
           <button 
             className={`btn-glass ${lang === 'ja' ? 'active' : ''}`} 
             onClick={() => handleSetLang('ja')}
-            style={{ padding: '6px 12px', fontSize: '0.8rem' }}
           >
             日本語
           </button>
           <button 
             className={`btn-glass ${lang === 'en' ? 'active' : ''}`} 
             onClick={() => handleSetLang('en')}
-            style={{ padding: '6px 12px', fontSize: '0.8rem' }}
           >
             English
           </button>

@@ -195,6 +195,15 @@ body::after {
   gap: 12px;
 }
 
+.header-controls .btn-glass {
+  min-width: 86px;
+  min-height: 36px;
+  padding: 7px 14px;
+  font-size: 0.82rem;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 /* Button UI */
 .btn-glass {
   background: var(--panel-bg);
@@ -482,7 +491,7 @@ body::after {
 .likert-scale::before {
   content: '';
   position: absolute;
-  top: 50%;
+  top: 24px;
   left: 20px;
   right: 20px;
   height: 2px;
@@ -496,9 +505,20 @@ body::after {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   cursor: pointer;
   width: 14%;
   min-width: 0;
+  min-height: 78px;
+  border-radius: 12px;
+  outline: none;
+}
+
+.likert-circle-slot {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .likert-circle {
@@ -530,6 +550,10 @@ body::after {
 .likert-option:hover .likert-circle {
   border-color: rgba(255, 255, 255, 0.6);
   transform: scale(1.08);
+}
+
+.likert-option:focus-visible {
+  box-shadow: 0 0 0 2px rgba(0, 245, 255, 0.35);
 }
 
 /* Checked styling */
@@ -571,6 +595,8 @@ body::after {
   font-weight: 500;
   transition: var(--transition-fast);
   line-height: 1.25;
+  overflow-wrap: normal;
+  word-break: keep-all;
 }
 
 .likert-option.selected .likert-label {
@@ -1218,18 +1244,26 @@ body::after {
   .likert-scale {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 4px;
-    margin-bottom: 20px;
+    align-items: start;
+    gap: 6px;
+    margin: 4px 0 22px;
     padding: 0;
   }
 
   .likert-scale::before {
-    left: 10%;
-    right: 10%;
+    top: 20px;
+    left: 9%;
+    right: 9%;
   }
 
   .likert-option {
     width: 100%;
+    min-height: 72px;
+    padding: 0 2px;
+  }
+
+  .likert-circle-slot {
+    height: 40px;
   }
 
   .likert-circle.large {
@@ -1248,9 +1282,11 @@ body::after {
   }
 
   .likert-label {
-    font-size: 0.65rem;
+    font-size: 0.68rem;
     margin-top: 8px;
-    min-height: 2.5em;
+    min-height: 1.3em;
+    line-height: 1.15;
+    white-space: nowrap;
   }
 
   .quiz-header {
@@ -1368,6 +1404,45 @@ body::after {
   }
 }
 
+@media (max-width: 560px) {
+  .app-header {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .logo-container {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .logo-text {
+    white-space: nowrap;
+  }
+
+  .logo-badge {
+    justify-self: end;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  .header-controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    max-width: 280px;
+    justify-self: center;
+  }
+
+  .header-controls .btn-glass {
+    width: 100%;
+    min-width: 0;
+    min-height: 42px;
+    padding: 0 14px;
+  }
+}
+
 @media (max-width: 420px) {
   .app-container {
     padding: 8px;
@@ -1409,8 +1484,12 @@ body::after {
     height: 22px;
   }
 
+  .likert-circle-slot {
+    height: 34px;
+  }
+
   .likert-label {
-    font-size: 0.58rem;
+    font-size: 0.6rem;
   }
 
   .results-badge {
