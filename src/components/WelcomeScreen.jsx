@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function WelcomeScreen({ onStart, onContinue, lang, hasSavedProgress, onViewGallery }) {
+export default function WelcomeScreen({ onStart, onContinue, lang, hasSavedProgress, onViewGallery, onViewMethodology }) {
   const [agreedDisclaimer, setAgreedDisclaimer] = useState(false);
 
   const t = {
@@ -75,6 +75,10 @@ export default function WelcomeScreen({ onStart, onContinue, lang, hasSavedProgr
     galleryBtn: {
       en: "Explore All 16 Types",
       ja: "16タイプ一覧を見る"
+    },
+    methodologyBtn: {
+      en: "Scientific Methodology",
+      ja: "科学的根拠を見る"
     }
   };
 
@@ -159,6 +163,9 @@ export default function WelcomeScreen({ onStart, onContinue, lang, hasSavedProgr
         </button>
         <button className="btn-glass" onClick={onViewGallery}>
           {t.galleryBtn[lang]}
+        </button>
+        <button className="btn-glass" onClick={onViewMethodology}>
+          {t.methodologyBtn[lang]}
         </button>
       </div>
     </div>

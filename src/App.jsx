@@ -4,6 +4,7 @@ import QuizScreen from './components/QuizScreen';
 import LoaderScreen from './components/LoaderScreen';
 import ResultsDashboard from './components/ResultsDashboard';
 import TypeGallery from './components/TypeGallery';
+import MethodologyScreen from './components/MethodologyScreen';
 import { questions } from './data/questions';
 
 const QUIZ_STORAGE_KEY = 'dskb-quiz-progress';
@@ -239,6 +240,11 @@ export default function App() {
     setCurrentScreen('gallery');
   };
 
+  const handleViewMethodology = () => {
+    clearResultUrl();
+    setCurrentScreen('methodology');
+  };
+
   return (
     <div className="app-container">
       {/* App Header */}
@@ -275,6 +281,7 @@ export default function App() {
             lang={lang} 
             hasSavedProgress={Boolean(savedQuiz)}
             onViewGallery={handleViewGallery}
+            onViewMethodology={handleViewMethodology}
           />
         )}
         
@@ -311,6 +318,13 @@ export default function App() {
 
         {currentScreen === 'gallery' && (
           <TypeGallery 
+            lang={lang} 
+            onBack={handleReset} 
+          />
+        )}
+
+        {currentScreen === 'methodology' && (
+          <MethodologyScreen 
             lang={lang} 
             onBack={handleReset} 
           />
