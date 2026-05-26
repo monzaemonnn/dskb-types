@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { types } from '../data/types';
 
 export default function TypeGallery({ lang, onBack }) {
@@ -54,44 +54,25 @@ export default function TypeGallery({ lang, onBack }) {
     <div className="gallery-container">
       {/* Header */}
       <div className="glass-card" style={{ padding: '30px', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '10px' }}>{t.title[lang]}</h1>
+        <h1 className="gallery-hero-title">{t.title[lang]}</h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>{t.subtitle[lang]}</p>
         
         {/* Controls */}
-        <div style={{ display: 'flex', gap: '12px', marginTop: '20px', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
+        <div className="gallery-controls">
           <input
+            className="gallery-search"
             type="text"
             placeholder={t.searchPlace[lang]}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              background: 'rgba(0,0,0,0.2)',
-              border: '1px solid var(--panel-border)',
-              borderRadius: '8px',
-              padding: '8px 16px',
-              color: 'var(--text-main)',
-              fontSize: '0.9rem',
-              width: '240px',
-              outline: 'none'
-            }}
           />
 
           {/* Filter Buttons */}
-          <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', alignItems: 'center' }}>
+          <div className="gallery-filter">
             <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{t.filterLabel[lang]}</span>
             <select
               value={filterAxis}
               onChange={(e) => setFilterAxis(e.target.value)}
-              style={{
-                background: 'rgba(0,0,0,0.2)',
-                border: '1px solid var(--panel-border)',
-                borderRadius: '8px',
-                padding: '8px 12px',
-                color: 'var(--text-main)',
-                fontSize: '0.9rem',
-                outline: 'none',
-                cursor: 'pointer'
-              }}
             >
               <option value="ALL">{t.all[lang]}</option>
               <option value="D">D (Danger)</option>
@@ -105,7 +86,7 @@ export default function TypeGallery({ lang, onBack }) {
             </select>
           </div>
 
-          <button className="btn-glass" onClick={onBack} style={{ marginLeft: 'auto' }}>
+          <button className="btn-glass gallery-back-btn" onClick={onBack}>
             <span style={{ transform: 'scaleX(-1)', display: 'inline-block' }}>✦</span> {t.backBtn[lang]}
           </button>
         </div>
@@ -128,7 +109,7 @@ export default function TypeGallery({ lang, onBack }) {
           <div className="glass-card modal-content-wrapper animate-fade-in" onClick={(e) => e.stopPropagation()} style={{ border: '1px solid rgba(255, 255, 255, 0.15)' }}>
             <button className="modal-close-btn" onClick={handleCloseDetails}>×</button>
             
-            <div style={{ textItems: 'center', marginBottom: '20px' }}>
+            <div className="modal-heading">
               <div className="results-badge" style={{ display: 'inline-block' }}>{selectedType}</div>
               <h2 className="results-type-code" style={{ fontSize: '3.5rem', margin: '10px 0' }}>{selectedType}</h2>
               <h3 style={{ fontSize: '2rem', fontWeight: 800 }}>{detailData.nameJP}</h3>
@@ -145,7 +126,7 @@ export default function TypeGallery({ lang, onBack }) {
             <p className="ideal-env-text" style={{ fontSize: '0.9rem', marginBottom: '25px' }}>{detailData.idealEnvironment[lang]}</p>
 
             {/* Grid for preferences & weaknesses */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '25px' }}>
+            <div className="modal-detail-grid">
               <div>
                 <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-s)', marginBottom: '8px', textTransform: 'uppercase' }}>
                   {t.traits[lang]}
@@ -172,18 +153,10 @@ export default function TypeGallery({ lang, onBack }) {
             <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-b)', marginBottom: '12px', textTransform: 'uppercase', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '15px' }}>
               {t.compatibility[lang]}
             </h4>
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <div className="modal-match-list">
               {types[detailData.bestMatch] && (
                 <div
-                  style={{
-                    flex: '1 1 200px',
-                    background: 'rgba(255, 255, 255, 0.015)',
-                    border: '1px solid rgba(255, 255, 255, 0.05)',
-                    borderLeft: '3px solid var(--color-s)',
-                    borderRadius: '8px',
-                    padding: '12px',
-                    cursor: 'pointer'
-                  }}
+                  className="modal-match-card best"
                   onClick={() => handleOpenDetails(detailData.bestMatch)}
                 >
                   <span style={{ fontSize: '0.7rem', color: 'var(--color-s)', fontWeight: 700, textTransform: 'uppercase' }}>{t.bestMatch[lang]}</span>
@@ -194,15 +167,7 @@ export default function TypeGallery({ lang, onBack }) {
               )}
               {types[detailData.abyssMatch] && (
                 <div
-                  style={{
-                    flex: '1 1 200px',
-                    background: 'rgba(255, 255, 255, 0.015)',
-                    border: '1px solid rgba(255, 255, 255, 0.05)',
-                    borderLeft: '3px solid var(--color-d)',
-                    borderRadius: '8px',
-                    padding: '12px',
-                    cursor: 'pointer'
-                  }}
+                  className="modal-match-card abyss"
                   onClick={() => handleOpenDetails(detailData.abyssMatch)}
                 >
                   <span style={{ fontSize: '0.7rem', color: 'var(--color-d)', fontWeight: 700, textTransform: 'uppercase' }}>{t.abyssMatch[lang]}</span>

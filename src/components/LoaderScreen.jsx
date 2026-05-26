@@ -1,28 +1,28 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+
+const steps = {
+  en: [
+    "Gathering responses...",
+    "Profiling distance & spatial preferences...",
+    "Analyzing sensory & narrative stimulation...",
+    "Mapping dominance & compliance dynamics...",
+    "Calculating buddy scope...",
+    "Matching with the 16 archetypes...",
+    "Generating detailed report..."
+  ],
+  ja: [
+    "回答を集計中...",
+    "空間と距離感の好みをプロファイリング中...",
+    "肉体とシチュエーション設定の偏向を分析中...",
+    "主導と服従のダイナミクスを算出中...",
+    "パートナー範囲を計算中...",
+    "16タイプの中からあなたに最も近い人格を特定中...",
+    "詳細な診断書を作成中..."
+  ]
+};
 
 export default function LoaderScreen({ onFinished, lang }) {
   const [currentStep, setCurrentStep] = useState(0);
-
-  const steps = {
-    en: [
-      "Gathering responses...",
-      "Profiling distance & spatial preferences...",
-      "Analyzing sensory & narrative stimulation...",
-      "Mapping dominance & compliance dynamics...",
-      "Calculating buddy scope...",
-      "Matching with the 16 archetypes...",
-      "Generating detailed report..."
-    ],
-    ja: [
-      "回答を集計中...",
-      "空間と距離感の好みをプロファイリング中...",
-      "肉体とシチュエーション設定の偏向を分析中...",
-      "主導と服従のダイナミクスを算出中...",
-      "パートナー範囲を計算中...",
-      "16タイプの中からあなたに最も近い人格を特定中...",
-      "詳細な診断書を作成中..."
-    ]
-  };
 
   const loadingText = lang === 'ja' ? '分析中' : 'Analyzing';
 
@@ -40,7 +40,7 @@ export default function LoaderScreen({ onFinished, lang }) {
     }, 700);
 
     return () => clearInterval(interval);
-  }, [onFinished, lang, steps]);
+  }, [onFinished, lang]);
 
   return (
     <div className="glass-card loader-container">

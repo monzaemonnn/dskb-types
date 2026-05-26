@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-export default function WelcomeScreen({ onStart, lang, setLang, onViewGallery }) {
+export default function WelcomeScreen({ onStart, lang, onViewGallery }) {
   const [agreedDisclaimer, setAgreedDisclaimer] = useState(false);
 
   const t = {

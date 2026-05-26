@@ -1,5 +1,3 @@
-import React from 'react';
-
 export default function RadarChart({ dPct, sPct, kPct, bPct, lang }) {
   // Center is (120, 120), Max radius is 80
   const cx = 120;

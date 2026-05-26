@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import RadarChart from './RadarChart';
 import { types } from '../data/types';
 
@@ -30,14 +30,6 @@ export default function ResultsDashboard({ typeCode, dPct, sPct, kPct, bPct, lan
 
   // SNS Share text generator
   const handleCopyShareText = () => {
-    const emojiMap = {
-      D: '🔴 (Danger)', d: '🌑 (Deep)',
-      S: '🔷 (Shape)', s: '📜 (Story)',
-      K: '👑 (Kanshu)', k: '🐾 (Kachiku)',
-      B: '🌊 (Broad)', b: '💖 (Beloved)'
-    };
-
-    const codeArray = typeCode.split('');
     const jpName = resultData.nameJP;
     const enName = resultData.nameEN;
 
@@ -428,7 +420,7 @@ export default function ResultsDashboard({ typeCode, dPct, sPct, kPct, bPct, lan
           <div className="glass-card modal-content-wrapper animate-fade-in" onClick={(e) => e.stopPropagation()} style={{ border: '1px solid rgba(255, 255, 255, 0.15)' }}>
             <button className="modal-close-btn" onClick={handleCloseModal}>×</button>
             
-            <div style={{ textItems: 'center', marginBottom: '20px' }}>
+            <div className="modal-heading">
               <div className="results-badge" style={{ display: 'inline-block' }}>
                 {modalType === resultData.bestMatch ? t.bestMatch[lang] : t.abyssMatch[lang]}
               </div>

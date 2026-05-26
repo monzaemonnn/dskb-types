@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import WelcomeScreen from './components/WelcomeScreen';
 import QuizScreen from './components/QuizScreen';
 import LoaderScreen from './components/LoaderScreen';
@@ -125,7 +125,6 @@ export default function App() {
           <WelcomeScreen 
             onStart={handleStartQuiz} 
             lang={lang} 
-            setLang={setLang}
             onViewGallery={handleViewGallery}
           />
         )}

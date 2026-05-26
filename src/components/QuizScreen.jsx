@@ -1,5 +1,3 @@
-import React, { useState } from 'react';
-
 export default function QuizScreen({ questions, currentIdx, answers, onAnswer, onBack, lang }) {
   const currentQuestion = questions[currentIdx];
   const progressPct = ((currentIdx) / questions.length) * 100;
