@@ -80,27 +80,49 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
       </div>
 
       <div className="gallery-grid v2-archetype-grid">
-        {filteredArchetypes.map((archetype) => (
-          <article
-            key={archetype.key}
-            className="gallery-card v2-archetype-card"
-            onClick={() => handleOpenDetails(archetype)}
-            style={{ cursor: 'pointer' }}
-          >
-            <div className="gallery-card-code">{archetype.family.title[lang]}</div>
-            <p className="gallery-card-tagline">{archetype.family.tagline[lang]}</p>
+        {filteredArchetypes.map((archetype) => {
+          const color1 = archetype.isBalanced ? 'var(--color-d)' : v2Dimensions[archetype.traits[0].key].color;
+          const color2 = archetype.isBalanced ? 'var(--color-b)' : v2Dimensions[archetype.traits[1].key].color;
 
-            <div className="v2-gallery-traits">
-              {archetype.isBalanced ? (
-                <span>{t.balanced[lang]}</span>
-              ) : archetype.traits.map((trait) => (
-                <span key={`${archetype.key}-${trait.key}`}>
-                  {v2Dimensions[trait.key][trait.side][lang]}
-                </span>
-              ))}
-            </div>
-          </article>
-        ))}
+          return (
+            <article
+              key={archetype.key}
+              className="gallery-card v2-archetype-card"
+              onClick={() => handleOpenDetails(archetype)}
+              style={{
+                '--glow-1': color1,
+                '--glow-2': color2
+              }}
+            >
+              <div className="gallery-card-code">{archetype.family.title[lang]}</div>
+              <p className="gallery-card-tagline">{archetype.family.tagline[lang]}</p>
+
+              <div className="v2-gallery-traits">
+                {archetype.isBalanced ? (
+                  <span style={{ borderColor: 'rgba(255, 255, 255, 0.15)', color: '#fff', background: 'rgba(255, 255, 255, 0.08)' }}>
+                    {t.balanced[lang]}
+                  </span>
+                ) : (
+                  archetype.traits.map((trait) => {
+                    const dim = v2Dimensions[trait.key];
+                    return (
+                      <span
+                        key={`${archetype.key}-${trait.key}`}
+                        style={{
+                          borderColor: `${dim.color}40`,
+                          color: dim.color,
+                          background: `${dim.color}0d`
+                        }}
+                      >
+                        {dim[trait.side][lang]}
+                      </span>
+                    );
+                  })
+                )}
+              </div>
+            </article>
+          );
+        })}
       </div>
 
       {/* Details Modal */}

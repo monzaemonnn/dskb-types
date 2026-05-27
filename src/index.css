@@ -1491,7 +1491,21 @@ body::after {
 }
 
 .v2-archetype-card {
-  cursor: default;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.v2-archetype-card:hover {
+  border-color: var(--glow-1, rgba(255, 255, 255, 0.15));
+  box-shadow: 0 10px 30px -10px var(--glow-1, rgba(255, 255, 255, 0.15)),
+              0 10px 30px -10px var(--glow-2, rgba(255, 255, 255, 0.15));
+}
+
+.v2-archetype-card:hover .gallery-card-code {
+  background: linear-gradient(to right, var(--glow-1, #fff), var(--glow-2, #fff));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .v2-gallery-traits {
