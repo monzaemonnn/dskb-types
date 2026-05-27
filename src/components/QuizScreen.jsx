@@ -9,6 +9,7 @@ export default function QuizScreen({ questions, currentIdx, answers, onAnswer, o
   const displayedSelectedValue = pendingSelection?.questionId === currentQuestion.id
     ? pendingSelection.value
     : currentSelectedValue;
+  const questionNumber = currentIdx + 1;
 
   useEffect(() => {
     return () => {
@@ -98,7 +99,14 @@ export default function QuizScreen({ questions, currentIdx, answers, onAnswer, o
       {/* Main question card */}
       <div className="question-card">
         <div>
-
+          <div className="question-meta-row">
+            <span className={`axis-chip axis-${currentQuestion.axis.toLowerCase()}`}>
+              {t.axisTags[currentQuestion.axis][lang]}
+            </span>
+            <span className="question-index-chip">
+              {String(questionNumber).padStart(2, '0')}
+            </span>
+          </div>
           <h2 className="question-text">
             {currentQuestion.text[lang]}
           </h2>

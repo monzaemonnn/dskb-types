@@ -12,6 +12,37 @@ export default function ResultsDashboard({ typeCode, dPct, sPct, kPct, bPct, lan
 
   if (!resultData) return <div>Type not found.</div>;
 
+  const axisSummaries = [
+    {
+      key: 'd',
+      pct: dPct,
+      left: lang === 'ja' ? '開放' : 'Danger',
+      right: lang === 'ja' ? '密室' : 'Deep',
+      className: 'd-axis'
+    },
+    {
+      key: 's',
+      pct: sPct,
+      left: lang === 'ja' ? '感覚' : 'Shape',
+      right: lang === 'ja' ? '文脈' : 'Story',
+      className: 's-axis'
+    },
+    {
+      key: 'k',
+      pct: kPct,
+      left: lang === 'ja' ? '主導' : 'Lead',
+      right: lang === 'ja' ? '委任' : 'Yield',
+      className: 'k-axis'
+    },
+    {
+      key: 'b',
+      pct: bPct,
+      left: lang === 'ja' ? '複数' : 'Broad',
+      right: lang === 'ja' ? '特定' : 'Beloved',
+      className: 'b-axis'
+    }
+  ];
+
   const t = {
     resultsBadge: { en: "Your Personality Profile", ja: "あなたの診断結果" },
     overview: { en: "Overview", ja: "概要" },
@@ -228,10 +259,20 @@ export default function ResultsDashboard({ typeCode, dPct, sPct, kPct, bPct, lan
         <div className="results-badge">{t.resultsBadge[lang]}</div>
         <div className="results-type-code">{typeCode}</div>
         <h1 className="results-type-title">{resultData.nameJP}</h1>
-        <h2 style={{ fontSize: '1.25rem', fontWeight: 500, color: 'var(--text-muted)', marginBottom: '15px' }}>
-          {resultData.nameEN}
-        </h2>
+        <h2 className="results-type-subtitle">{resultData.nameEN}</h2>
         <div className="results-tagline">“ {resultData.tagline[lang]} ”</div>
+        <div className="result-axis-strip" aria-label={lang === 'ja' ? '指標サマリー' : 'Axis summary'}>
+          {axisSummaries.map((axis) => (
+            <div key={axis.key} className="result-axis-card">
+              <div className="result-axis-card-top">
+                <span className={`result-axis-dot ${axis.className}`}></span>
+                <span>{axis.left}</span>
+              </div>
+              <strong>{axis.pct}%</strong>
+              <span className="result-axis-card-bottom">{axis.right} {100 - axis.pct}%</span>
+            </div>
+          ))}
+        </div>
         <div className="results-divider"></div>
         <p className="results-description">{resultData.description[lang]}</p>
       </div>
