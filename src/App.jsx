@@ -5,9 +5,15 @@ import LoaderScreen from './components/LoaderScreen';
 import ResultsDashboard from './components/ResultsDashboard';
 import TypeGallery from './components/TypeGallery';
 import MethodologyScreen from './components/MethodologyScreen';
+import V2WelcomeScreen from './components/V2WelcomeScreen';
+import V2ResultsDashboard from './components/V2ResultsDashboard';
+import V2ArchetypeGallery from './components/V2ArchetypeGallery';
 import { questions } from './data/questions';
+import { v2Questions } from './data/v2Questions';
+import { decodeV2ResultUrl, encodeV2ResultUrl, scoreV2Answers } from './utils/v2Scoring';
 
 const QUIZ_STORAGE_KEY = 'dskb-quiz-progress';
+const V2_QUIZ_STORAGE_KEY = 'dskb-v2-quiz-progress';
 
 function clampPercentage(value) {
   const numericValue = Number(value);
@@ -38,11 +44,27 @@ function getSharedResultFromUrl() {
   };
 }
 
-function loadSavedQuiz() {
+function getSharedV2ResultFromUrl() {
+  if (typeof window === 'undefined') return null;
+  return decodeV2ResultUrl(new URLSearchParams(window.location.search));
+}
+
+function getInitialViewFromUrl() {
+  if (typeof window === 'undefined') return null;
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('view') !== 'v2-gallery') return null;
+
+  return {
+    screen: 'v2-gallery',
+    lang: params.get('lang') === 'en' ? 'en' : 'ja'
+  };
+}
+
+function loadSavedQuiz(storageKey = QUIZ_STORAGE_KEY, totalQuestions = questions.length) {
   if (typeof window === 'undefined') return null;
 
   try {
-    const savedProgress = window.localStorage.getItem(QUIZ_STORAGE_KEY);
+    const savedProgress = window.localStorage.getItem(storageKey);
     if (!savedProgress) return null;
 
     const parsedProgress = JSON.parse(savedProgress);
@@ -50,11 +72,12 @@ function loadSavedQuiz() {
     const currentQuestionIdx = Number(parsedProgress?.currentQuestionIdx);
 
     if (!answers || typeof answers !== 'object') return null;
-    if (!Number.isInteger(currentQuestionIdx) || currentQuestionIdx < 0 || currentQuestionIdx >= questions.length) return null;
+    if (!Number.isInteger(currentQuestionIdx) || currentQuestionIdx < 0 || currentQuestionIdx >= totalQuestions) return null;
 
     return {
       answers,
       currentQuestionIdx,
+      version: parsedProgress.version,
       lang: parsedProgress.lang === 'en' ? 'en' : 'ja'
     };
   } catch {
@@ -62,14 +85,14 @@ function loadSavedQuiz() {
   }
 }
 
-function saveQuizProgress(progress) {
+function saveQuizProgress(progress, storageKey = QUIZ_STORAGE_KEY) {
   if (typeof window === 'undefined') return;
-  window.localStorage.setItem(QUIZ_STORAGE_KEY, JSON.stringify(progress));
+  window.localStorage.setItem(storageKey, JSON.stringify(progress));
 }
 
-function clearSavedQuiz() {
+function clearSavedQuiz(storageKey = QUIZ_STORAGE_KEY) {
   if (typeof window === 'undefined') return;
-  window.localStorage.removeItem(QUIZ_STORAGE_KEY);
+  window.localStorage.removeItem(storageKey);
 }
 
 function clearResultUrl() {
@@ -92,26 +115,46 @@ function publishResultUrl(typeCode, percentages, lang) {
   window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`);
 }
 
+function publishV2ResultUrl(scores, lang) {
+  if (typeof window === 'undefined') return;
+  const params = encodeV2ResultUrl(scores, lang);
+  window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`);
+}
+
 export default function App() {
   const [initialAppState] = useState(() => {
+    const sharedV2Result = getSharedV2ResultFromUrl();
     const sharedResult = getSharedResultFromUrl();
+    const initialView = getInitialViewFromUrl();
     const savedQuiz = loadSavedQuiz();
+    const savedV2Quiz = loadSavedQuiz(V2_QUIZ_STORAGE_KEY, v2Questions.length);
 
     return {
+      sharedV2Result,
       sharedResult,
-      savedQuiz
+      initialView,
+      savedQuiz,
+      savedV2Quiz
     };
   });
 
-  const [currentScreen, setCurrentScreen] = useState(initialAppState.sharedResult ? 'results' : 'welcome'); // welcome, quiz, loader, results, gallery
-  const [lang, setLang] = useState(initialAppState.sharedResult?.lang || initialAppState.savedQuiz?.lang || 'ja'); // 'ja' or 'en'
+  const [currentScreen, setCurrentScreen] = useState(
+    initialAppState.sharedV2Result ? 'v2-results' : initialAppState.sharedResult ? 'results' : initialAppState.initialView?.screen || 'welcome'
+  ); // welcome, quiz, loader, results, gallery, v2-welcome, v2-quiz, v2-results, v2-gallery
+  const [lang, setLang] = useState(
+    initialAppState.sharedV2Result?.lang || initialAppState.sharedResult?.lang || initialAppState.initialView?.lang || initialAppState.savedQuiz?.lang || initialAppState.savedV2Quiz?.lang || 'ja'
+  ); // 'ja' or 'en'
   const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
   const [answers, setAnswers] = useState({}); // { [questionId]: value }
   const [savedQuiz, setSavedQuiz] = useState(initialAppState.savedQuiz);
+  const [v2QuestionIdx, setV2QuestionIdx] = useState(0);
+  const [v2Answers, setV2Answers] = useState({});
+  const [savedV2Quiz, setSavedV2Quiz] = useState(initialAppState.savedV2Quiz);
 
   // Result metrics
   const [typeCode, setTypeCode] = useState(initialAppState.sharedResult?.typeCode || '');
   const [percentages, setPercentages] = useState(initialAppState.sharedResult?.percentages || { dPct: 50, sPct: 50, kPct: 50, bPct: 50 });
+  const [v2Scores, setV2Scores] = useState(initialAppState.sharedV2Result?.scores || null);
 
   const persistQuizProgress = (nextAnswers, nextQuestionIdx, nextLang = lang) => {
     const progress = {
@@ -124,6 +167,18 @@ export default function App() {
     setSavedQuiz(progress);
   };
 
+  const persistV2QuizProgress = (nextAnswers, nextQuestionIdx, nextLang = lang) => {
+    const progress = {
+      version: 2,
+      answers: nextAnswers,
+      currentQuestionIdx: nextQuestionIdx,
+      lang: nextLang
+    };
+
+    saveQuizProgress(progress, V2_QUIZ_STORAGE_KEY);
+    setSavedV2Quiz(progress);
+  };
+
   const handleSetLang = (nextLang) => {
     setLang(nextLang);
 
@@ -131,8 +186,16 @@ export default function App() {
       persistQuizProgress(answers, currentQuestionIdx, nextLang);
     }
 
+    if (currentScreen === 'v2-quiz' && Object.keys(v2Answers).length > 0) {
+      persistV2QuizProgress(v2Answers, v2QuestionIdx, nextLang);
+    }
+
     if (currentScreen === 'results' && typeCode) {
       publishResultUrl(typeCode, percentages, nextLang);
+    }
+
+    if (currentScreen === 'v2-results' && v2Scores) {
+      publishV2ResultUrl(v2Scores, nextLang);
     }
   };
 
@@ -141,8 +204,19 @@ export default function App() {
     clearResultUrl();
     setSavedQuiz(null);
     setAnswers({});
+    setV2Scores(null);
     setCurrentQuestionIdx(0);
     setCurrentScreen('quiz');
+  };
+
+  const handleStartV2Quiz = () => {
+    clearSavedQuiz(V2_QUIZ_STORAGE_KEY);
+    clearResultUrl();
+    setSavedV2Quiz(null);
+    setV2Answers({});
+    setV2Scores(null);
+    setV2QuestionIdx(0);
+    setCurrentScreen('v2-quiz');
   };
 
   const handleContinueQuiz = () => {
@@ -153,6 +227,16 @@ export default function App() {
     setCurrentQuestionIdx(savedQuiz.currentQuestionIdx);
     setLang(savedQuiz.lang);
     setCurrentScreen('quiz');
+  };
+
+  const handleContinueV2Quiz = () => {
+    if (!savedV2Quiz) return;
+
+    clearResultUrl();
+    setV2Answers(savedV2Quiz.answers);
+    setV2QuestionIdx(savedV2Quiz.currentQuestionIdx);
+    setLang(savedV2Quiz.lang);
+    setCurrentScreen('v2-quiz');
   };
 
   const handleAnswer = (questionId, value, proceed = false) => {
@@ -181,6 +265,36 @@ export default function App() {
       const previousQuestionIdx = currentQuestionIdx - 1;
       setCurrentQuestionIdx(previousQuestionIdx);
       persistQuizProgress(answers, previousQuestionIdx);
+    }
+  };
+
+  const handleV2Answer = (questionId, value, proceed = false) => {
+    const updatedAnswers = { ...v2Answers, [questionId]: value };
+    setV2Answers(updatedAnswers);
+
+    if (proceed) {
+      if (v2QuestionIdx < v2Questions.length - 1) {
+        const nextQuestionIdx = v2QuestionIdx + 1;
+        setV2QuestionIdx(nextQuestionIdx);
+        persistV2QuizProgress(updatedAnswers, nextQuestionIdx);
+      } else {
+        clearSavedQuiz(V2_QUIZ_STORAGE_KEY);
+        setSavedV2Quiz(null);
+        const calculatedScores = scoreV2Answers(updatedAnswers);
+        setV2Scores(calculatedScores);
+        publishV2ResultUrl(calculatedScores, lang);
+        setCurrentScreen('loader');
+      }
+    } else {
+      persistV2QuizProgress(updatedAnswers, v2QuestionIdx);
+    }
+  };
+
+  const handleV2Back = () => {
+    if (v2QuestionIdx > 0) {
+      const previousQuestionIdx = v2QuestionIdx - 1;
+      setV2QuestionIdx(previousQuestionIdx);
+      persistV2QuizProgress(v2Answers, previousQuestionIdx);
     }
   };
 
@@ -221,18 +335,33 @@ export default function App() {
   };
 
   const handleLoaderFinished = () => {
-    setCurrentScreen('results');
+    setCurrentScreen(v2Scores ? 'v2-results' : 'results');
   };
 
   const handleReset = () => {
     clearSavedQuiz();
+    clearSavedQuiz(V2_QUIZ_STORAGE_KEY);
     clearResultUrl();
     setSavedQuiz(null);
+    setSavedV2Quiz(null);
     setAnswers({});
+    setV2Answers({});
     setCurrentQuestionIdx(0);
+    setV2QuestionIdx(0);
     setTypeCode('');
+    setV2Scores(null);
     setPercentages({ dPct: 50, sPct: 50, kPct: 50, bPct: 50 });
     setCurrentScreen('welcome');
+  };
+
+  const handleResetV2 = () => {
+    clearSavedQuiz(V2_QUIZ_STORAGE_KEY);
+    clearResultUrl();
+    setSavedV2Quiz(null);
+    setV2Answers({});
+    setV2QuestionIdx(0);
+    setV2Scores(null);
+    setCurrentScreen('v2-welcome');
   };
 
   const handleViewGallery = () => {
@@ -243,6 +372,28 @@ export default function App() {
   const handleViewMethodology = () => {
     clearResultUrl();
     setCurrentScreen('methodology');
+  };
+
+  const handleViewV2 = () => {
+    clearResultUrl();
+    setCurrentScreen('v2-welcome');
+  };
+
+  const handleViewV2Gallery = () => {
+    if (!v2Scores && typeof window !== 'undefined') {
+      window.history.replaceState(null, '', `${window.location.pathname}?view=v2-gallery&lang=${lang}`);
+    }
+    setCurrentScreen('v2-gallery');
+  };
+
+  const handleBackFromV2Gallery = () => {
+    setCurrentScreen(v2Scores ? 'v2-results' : 'v2-welcome');
+  };
+
+  const handleBackToV1 = () => {
+    clearResultUrl();
+    setV2Scores(null);
+    setCurrentScreen('welcome');
   };
 
   return (
@@ -282,6 +433,18 @@ export default function App() {
             hasSavedProgress={Boolean(savedQuiz)}
             onViewGallery={handleViewGallery}
             onViewMethodology={handleViewMethodology}
+            onViewV2={handleViewV2}
+          />
+        )}
+
+        {currentScreen === 'v2-welcome' && (
+          <V2WelcomeScreen
+            lang={lang}
+            onStart={handleStartV2Quiz}
+            onContinue={handleContinueV2Quiz}
+            hasSavedProgress={Boolean(savedV2Quiz)}
+            onBackToV1={handleBackToV1}
+            onViewArchetypes={handleViewV2Gallery}
           />
         )}
         
@@ -292,6 +455,17 @@ export default function App() {
             answers={answers}
             onAnswer={handleAnswer}
             onBack={handleBack}
+            lang={lang}
+          />
+        )}
+
+        {currentScreen === 'v2-quiz' && (
+          <QuizScreen
+            questions={v2Questions}
+            currentIdx={v2QuestionIdx}
+            answers={v2Answers}
+            onAnswer={handleV2Answer}
+            onBack={handleV2Back}
             lang={lang}
           />
         )}
@@ -313,6 +487,23 @@ export default function App() {
             lang={lang}
             onReset={handleReset}
             onViewGallery={handleViewGallery}
+          />
+        )}
+
+        {currentScreen === 'v2-results' && v2Scores && (
+          <V2ResultsDashboard
+            scores={v2Scores}
+            lang={lang}
+            onReset={handleResetV2}
+            onBackToV1={handleBackToV1}
+            onViewArchetypes={handleViewV2Gallery}
+          />
+        )}
+
+        {currentScreen === 'v2-gallery' && (
+          <V2ArchetypeGallery
+            lang={lang}
+            onBack={handleBackFromV2Gallery}
           />
         )}
 
