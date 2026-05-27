@@ -404,36 +404,51 @@ ${t.sharePrompt.en}
           <p>{t.sharePanelCopy[lang]}</p>
         </div>
 
-        <button className="btn-primary" onClick={handleNativeShare}>
+        {/* Primary Web Share API button */}
+        <button className="btn-primary" onClick={handleNativeShare} style={{ width: '100%', marginBottom: '12px' }}>
           {nativeShareSuccess ? `✓ ${t.shared[lang]}` : t.nativeShare[lang]}
         </button>
-        <button className="btn-glass share-service-btn x-share" onClick={handleOpenXShare}>
-          X <span>{t.xShare[lang]}</span>
+
+        {/* Social channels (2-column layout) */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
+          <button className="btn-glass share-service-btn x-share" onClick={handleOpenXShare} style={{ margin: 0, width: '100%' }}>
+            X <span>{t.xShare[lang]}</span>
+          </button>
+          <button className="btn-glass share-service-btn line-share" onClick={handleOpenLineShare} style={{ margin: 0, width: '100%' }}>
+            LINE <span>{t.lineShare[lang]}</span>
+          </button>
+        </div>
+
+        {/* Copy utilities (2-column layout) */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
+          <button className="btn-primary" onClick={handleCopyShareText} style={{ margin: 0, width: '100%', fontSize: '0.9rem' }}>
+            {copySuccess ? `✓ ${t.copied[lang]}` : t.share[lang]}
+          </button>
+          <button className="btn-glass" onClick={handleCopyResultLink} style={{ margin: 0, width: '100%', fontSize: '0.9rem' }}>
+            {linkCopySuccess ? `✓ ${t.copied[lang]}` : t.copyLink[lang]}
+          </button>
+        </div>
+
+        {/* Download section with distinct border styling */}
+        <button className="btn-glass" onClick={handleDownloadCard} style={{ width: '100%', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', border: '1px dashed rgba(255,255,255,0.2)' }}>
+          <span>⬇</span> {t.download[lang]}
         </button>
-        <button className="btn-glass share-service-btn line-share" onClick={handleOpenLineShare}>
-          LINE <span>{t.lineShare[lang]}</span>
-        </button>
-        <button className="btn-primary" onClick={handleCopyShareText}>
-          {copySuccess ? `✓ ${t.copied[lang]}` : t.share[lang]}
-        </button>
-        <button className="btn-glass" onClick={handleCopyResultLink}>
-          {linkCopySuccess ? `✓ ${t.copied[lang]}` : t.copyLink[lang]}
-        </button>
-        <button className="btn-glass" onClick={handleDownloadCard}>
-          {t.download[lang]}
-        </button>
-        <button className="btn-glass" onClick={onViewArchetypes}>
-          {t.archetypes[lang]}
-        </button>
-        <button className="btn-glass" onClick={onViewMethodology}>
-          {t.methodology[lang]}
-        </button>
-        <button className="btn-glass" onClick={onReset}>
-          {t.retake[lang]}
-        </button>
-        <button className="btn-glass" onClick={onBackToV1}>
-          {t.back[lang]}
-        </button>
+
+        {/* Lower Navigation & Reset Grid */}
+        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <button className="btn-glass" onClick={onViewArchetypes} style={{ margin: 0, width: '100%' }}>
+            {t.archetypes[lang]}
+          </button>
+          <button className="btn-glass" onClick={onViewMethodology} style={{ margin: 0, width: '100%' }}>
+            {t.methodology[lang]}
+          </button>
+          <button className="btn-glass" onClick={onReset} style={{ margin: 0, width: '100%' }}>
+            {t.retake[lang]}
+          </button>
+          <button className="btn-glass" onClick={onBackToV1} style={{ margin: 0, width: '100%', borderColor: 'rgba(255,0,127,0.25)', color: '#ff4d94' }}>
+            {t.back[lang]}
+          </button>
+        </div>
         <canvas ref={canvasRef} style={{ display: 'none' }} aria-hidden="true"></canvas>
       </div>
 
