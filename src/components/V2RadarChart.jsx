@@ -1,7 +1,7 @@
 import { v2Dimensions } from '../data/v2Profile';
 
 const DIMENSION_KEYS = Object.keys(v2Dimensions);
-const SIZE = 380;
+const SIZE = 400;
 const CENTER = SIZE / 2;
 const RADIUS = 100;
 const LEVELS = 4;
@@ -22,7 +22,22 @@ function getPolygonPoints(radius) {
   }).join(' ');
 }
 
-function getLabelProps(angle, radius) {
+function getLabelLines(title, lang) {
+  if (lang === 'ja') {
+    return [title];
+  }
+  // For English, split at the last space to wrap the long "Orientation/Distance/Pattern/Focus" labels
+  const lastSpaceIndex = title.lastIndexOf(' ');
+  if (lastSpaceIndex !== -1) {
+    return [
+      title.substring(0, lastSpaceIndex),
+      title.substring(lastSpaceIndex + 1)
+    ];
+  }
+  return [title];
+}
+
+function getLabelProps(angle, radius, numLines) {
   const angleRad = ((angle - 90) * Math.PI) / 180;
   const dist = radius + 15;
   const x = CENTER + dist * Math.cos(angleRad);
@@ -34,14 +49,16 @@ function getLabelProps(angle, radius) {
   const normalized = (angle % 360 + 360) % 360;
   if (normalized < 10 || normalized > 350) {
     textAnchor = 'middle';
-    dy = '-0.6em';
+    dy = numLines > 1 ? '-1.3em' : '-0.6em';
   } else if (normalized > 170 && normalized < 190) {
     textAnchor = 'middle';
     dy = '1.2em';
   } else if (normalized >= 10 && normalized <= 170) {
     textAnchor = 'start';
+    dy = numLines > 1 ? '-0.2em' : '0.35em';
   } else if (normalized >= 190 && normalized <= 350) {
     textAnchor = 'end';
+    dy = numLines > 1 ? '-0.2em' : '0.35em';
   }
 
   return { x, y, textAnchor, dy };
@@ -98,20 +115,30 @@ export default function V2RadarChart({ scores, lang }) {
       {/* Labels */}
       {DIMENSION_KEYS.map((key, i) => {
         const angle = (360 / DIMENSION_KEYS.length) * i;
-        const { x, y, textAnchor, dy } = getLabelProps(angle, RADIUS);
         const dimension = v2Dimensions[key];
+        const title = dimension.title[lang];
+        const lines = getLabelLines(title, lang);
+        const { x, y, textAnchor, dy } = getLabelProps(angle, RADIUS, lines.length);
+
         return (
           <text
             key={`label-${i}`}
             x={x}
             y={y}
             textAnchor={textAnchor}
-            dy={dy}
             fill="var(--text-muted)"
-            fontSize="10"
+            fontSize="12"
             fontWeight="600"
           >
-            {dimension.title[lang]}
+            {lines.map((line, index) => (
+              <tspan
+                key={index}
+                x={x}
+                dy={index === 0 ? dy : '1.2em'}
+              >
+                {line}
+              </tspan>
+            ))}
           </text>
         );
       })}
