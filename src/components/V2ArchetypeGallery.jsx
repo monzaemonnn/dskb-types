@@ -5,18 +5,22 @@ import { getV2ArchetypeCatalog } from '../utils/v2Scoring';
 export default function V2ArchetypeGallery({ lang, onBack }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterDimension, setFilterDimension] = useState('ALL');
+  const [selectedArchetype, setSelectedArchetype] = useState(null);
 
   const t = {
     title: { ja: 'V2 アーキタイプ一覧', en: 'V2 Archetype Library' },
     subtitle: {
-      ja: '5つの指標から生まれる代表的なモニカーを一覧できます。',
-      en: 'Browse the V2 monikers generated from the five desire dimensions.'
+      ja: '5つの指標から生まれる代表的なモニカーを一覧できます。クリックすると詳細を表示します。',
+      en: 'Browse the V2 monikers generated from the five desire dimensions. Click to view details.'
     },
     search: { ja: '名前や指標で検索...', en: 'Search names or traits...' },
     filter: { ja: '指標で絞り込み:', en: 'Filter by dimension:' },
     all: { ja: 'すべて', en: 'All' },
     balanced: { ja: 'バランス型', en: 'Balanced' },
-    back: { ja: 'V2に戻る', en: 'Back to V2' }
+    back: { ja: 'V2に戻る', en: 'Back to V2' },
+    close: { ja: '閉じる', en: 'Close' },
+    composition: { ja: '構成指標', en: 'Composition' },
+    description: { ja: '特徴の説明', en: 'Preference Detail' }
   };
 
   const archetypes = useMemo(() => getV2ArchetypeCatalog(), []);
@@ -35,6 +39,14 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
 
     return matchesSearch && matchesFilter;
   });
+
+  const handleOpenDetails = (archetype) => {
+    setSelectedArchetype(archetype);
+  };
+
+  const handleCloseDetails = () => {
+    setSelectedArchetype(null);
+  };
 
   return (
     <div className="gallery-container v2-gallery-container">
@@ -69,7 +81,12 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
 
       <div className="gallery-grid v2-archetype-grid">
         {filteredArchetypes.map((archetype) => (
-          <article key={archetype.key} className="gallery-card v2-archetype-card">
+          <article
+            key={archetype.key}
+            className="gallery-card v2-archetype-card"
+            onClick={() => handleOpenDetails(archetype)}
+            style={{ cursor: 'pointer' }}
+          >
             <div className="gallery-card-code">{archetype.family.title[lang]}</div>
             <p className="gallery-card-tagline">{archetype.family.tagline[lang]}</p>
 
@@ -85,6 +102,77 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
           </article>
         ))}
       </div>
+
+      {/* Details Modal */}
+      {selectedArchetype && (
+        <div className="modal-overlay" onClick={handleCloseDetails}>
+          <div
+            className="glass-card modal-content-wrapper animate-fade-in"
+            onClick={(e) => e.stopPropagation()}
+            style={{ border: '1px solid rgba(255, 255, 255, 0.15)' }}
+          >
+            <button className="modal-close-btn" onClick={handleCloseDetails}>×</button>
+            
+            <div className="modal-heading" style={{ textAlign: 'center', marginBottom: '25px' }}>
+              <h2 className="results-type-code" style={{ fontSize: '2.5rem', margin: '10px 0', color: 'var(--text-main)' }}>
+                {selectedArchetype.family.title[lang]}
+              </h2>
+              <p className="results-tagline" style={{ fontSize: '1.05rem', fontStyle: 'italic', color: 'var(--text-muted)', margin: '10px 0 0 0' }}>
+                “ {selectedArchetype.family.tagline[lang]} ”
+              </p>
+            </div>
+
+            <div style={{ marginTop: '20px' }}>
+              <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-s)', marginBottom: '15px', textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '5px' }}>
+                {selectedArchetype.isBalanced ? t.description[lang] : t.composition[lang]}
+              </h4>
+
+              {selectedArchetype.isBalanced ? (
+                <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', padding: '20px', borderRadius: '12px' }}>
+                  <p style={{ fontSize: '0.95rem', color: '#dfdde8', lineHeight: '1.6', margin: 0 }}>
+                    {lang === 'ja'
+                      ? '5つのすべての指標において中立または柔軟なバランスを示しており、特定の極端な傾向に固定されません。相手のタイプ、シチュエーション、タイミングに応じて「導く」側にも「委ねる」側にもなれる、非常に柔軟で環境適応力の高いタイプです。'
+                      : 'You show a balanced or flexible pattern across all five dimensions. Rather than being fixed in extreme preferences, you adapt fluidly to different partners, scenarios, and contexts, allowing you to easily lead or yield as needed.'}
+                  </p>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                  {selectedArchetype.traits.map((trait) => {
+                    const dimension = v2Dimensions[trait.key];
+                    return (
+                      <div
+                        key={trait.key}
+                        style={{
+                          background: 'rgba(255,255,255,0.02)',
+                          border: `1px solid ${dimension.color}30`,
+                          padding: '20px',
+                          borderRadius: '12px',
+                          boxShadow: `0 4px 15px ${dimension.color}05`
+                        }}
+                      >
+                        <h5 style={{ color: dimension.color, fontSize: '1.05rem', fontWeight: 700, marginBottom: '6px', marginTop: 0 }}>
+                          {dimension.title[lang]} — <span style={{ textDecoration: 'underline' }}>{dimension[trait.side][lang]} ({dimension.code[trait.side]})</span>
+                        </h5>
+                        <p style={{ fontSize: '0.95rem', color: '#dfdde8', lineHeight: '1.5', margin: 0 }}>
+                          {dimension.descriptions[trait.side][lang]}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <button
+              className="btn-primary"
+              onClick={handleCloseDetails}
+              style={{ width: '100%', marginTop: '30px', padding: '10px 0', borderRadius: '8px', fontSize: '0.95rem' }}
+            >
+              {t.close[lang]}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
