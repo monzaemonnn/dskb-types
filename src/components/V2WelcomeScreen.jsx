@@ -49,7 +49,17 @@ export default function V2WelcomeScreen({ lang, onStart, onContinue, hasSavedPro
 
   return (
     <div className="glass-card welcome-container v2-welcome-container">
-      <div className="welcome-badge v2-beta-badge" style={{ background: 'rgba(255, 0, 127, 0.15)', color: '#ff4d94', border: '1px solid rgba(255, 0, 127, 0.3)' }}>{t.badge[lang]}</div>
+      <div className="welcome-badge v2-beta-badge" style={{ 
+        background: 'rgba(255, 0, 127, 0.15)', 
+        color: '#ff4d94', 
+        border: '1px solid rgba(255, 0, 127, 0.3)',
+        padding: '6px 14px',
+        borderRadius: '50px',
+        webkitBackgroundClip: 'initial',
+        webkitTextFillColor: '#ff4d94',
+        backgroundClip: 'initial',
+        display: 'inline-block'
+      }}>{t.badge[lang]}</div>
       <h1 className="welcome-title">
         {t.title[lang]}<br />
         <span style={{ fontSize: '1.35rem', fontWeight: 600 }}>{t.subtitle[lang]}</span>
