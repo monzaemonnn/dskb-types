@@ -2,7 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 import { v2Dimensions } from '../data/v2Profile';
 import { getPrimaryTraits, getTraitSide, getV2CodeTraits, getV2ResultFamily, getV2TypeCode } from '../utils/v2Scoring';
 
-export default function V2ResultsDashboard({ scores, lang, onReset, onBackToV1, onViewArchetypes }) {
+export default function V2ResultsDashboard({ scores, lang, onReset, onBackToV1, onViewArchetypes, onViewMethodology }) {
   const [copySuccess, setCopySuccess] = useState(false);
   const [linkCopySuccess, setLinkCopySuccess] = useState(false);
   const [nativeShareSuccess, setNativeShareSuccess] = useState(false);
@@ -28,6 +28,7 @@ export default function V2ResultsDashboard({ scores, lang, onReset, onBackToV1, 
     copyLink: { ja: '結果リンクをコピー', en: 'Copy result link' },
     download: { ja: 'プロフィール画像をダウンロード', en: 'Download profile card' },
     archetypes: { ja: 'アーキタイプ一覧', en: 'Explore archetypes' },
+    methodology: { ja: 'V2方法論', en: 'V2 Methodology' },
     copied: { ja: 'コピーしました', en: 'Copied' },
     shared: { ja: '共有しました', en: 'Shared' },
     retake: { ja: 'V2をもう一度', en: 'Retake V2' },
@@ -304,6 +305,9 @@ ${t.sharePrompt.en}
         </button>
         <button className="btn-glass" onClick={onViewArchetypes}>
           {t.archetypes[lang]}
+        </button>
+        <button className="btn-glass" onClick={onViewMethodology}>
+          {t.methodology[lang]}
         </button>
         <button className="btn-glass" onClick={onReset}>
           {t.retake[lang]}

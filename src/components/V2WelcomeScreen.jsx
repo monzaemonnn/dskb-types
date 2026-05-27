@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function V2WelcomeScreen({ lang, onStart, onContinue, hasSavedProgress, onBackToV1, onViewArchetypes }) {
+export default function V2WelcomeScreen({ lang, onStart, onContinue, hasSavedProgress, onBackToV1, onViewArchetypes, onViewMethodology }) {
   const [agreedDisclaimer, setAgreedDisclaimer] = useState(false);
 
   const t = {
@@ -29,6 +29,7 @@ export default function V2WelcomeScreen({ lang, onStart, onContinue, hasSavedPro
     start: { ja: 'V2診断を開始', en: 'Start V2 Profile' },
     continue: { ja: 'V2を途中から再開', en: 'Continue V2 Profile' },
     archetypes: { ja: 'アーキタイプ一覧', en: 'Explore archetypes' },
+    methodology: { ja: 'V2方法論', en: 'V2 Methodology' },
     back: { ja: 'DSKBに戻る', en: 'Back to DSKB' },
     cards: [
       {
@@ -98,6 +99,9 @@ export default function V2WelcomeScreen({ lang, onStart, onContinue, hasSavedPro
         </button>
         <button className="btn-glass" onClick={onViewArchetypes}>
           {t.archetypes[lang]}
+        </button>
+        <button className="btn-glass" onClick={onViewMethodology}>
+          {t.methodology[lang]}
         </button>
       </div>
     </div>

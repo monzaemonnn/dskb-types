@@ -8,6 +8,7 @@ import MethodologyScreen from './components/MethodologyScreen';
 import V2WelcomeScreen from './components/V2WelcomeScreen';
 import V2ResultsDashboard from './components/V2ResultsDashboard';
 import V2ArchetypeGallery from './components/V2ArchetypeGallery';
+import V2MethodologyScreen from './components/V2MethodologyScreen';
 import { questions } from './data/questions';
 import { v2Questions } from './data/v2Questions';
 import { decodeV2ResultUrl, encodeV2ResultUrl, scoreV2Answers } from './utils/v2Scoring';
@@ -52,10 +53,11 @@ function getSharedV2ResultFromUrl() {
 function getInitialViewFromUrl() {
   if (typeof window === 'undefined') return null;
   const params = new URLSearchParams(window.location.search);
-  if (params.get('view') !== 'v2-gallery') return null;
+  const view = params.get('view');
+  if (view !== 'v2-gallery' && view !== 'v2-methodology') return null;
 
   return {
-    screen: 'v2-gallery',
+    screen: view,
     lang: params.get('lang') === 'en' ? 'en' : 'ja'
   };
 }
@@ -140,7 +142,7 @@ export default function App() {
 
   const [currentScreen, setCurrentScreen] = useState(
     initialAppState.sharedV2Result ? 'v2-results' : initialAppState.sharedResult ? 'results' : initialAppState.initialView?.screen || 'welcome'
-  ); // welcome, quiz, loader, results, gallery, v2-welcome, v2-quiz, v2-results, v2-gallery
+  ); // welcome, quiz, loader, results, gallery, methodology, v2-welcome, v2-quiz, v2-results, v2-gallery, v2-methodology
   const [lang, setLang] = useState(
     initialAppState.sharedV2Result?.lang || initialAppState.sharedResult?.lang || initialAppState.initialView?.lang || initialAppState.savedQuiz?.lang || initialAppState.savedV2Quiz?.lang || 'ja'
   ); // 'ja' or 'en'
@@ -386,7 +388,18 @@ export default function App() {
     setCurrentScreen('v2-gallery');
   };
 
+  const handleViewV2Methodology = () => {
+    if (!v2Scores && typeof window !== 'undefined') {
+      window.history.replaceState(null, '', `${window.location.pathname}?view=v2-methodology&lang=${lang}`);
+    }
+    setCurrentScreen('v2-methodology');
+  };
+
   const handleBackFromV2Gallery = () => {
+    setCurrentScreen(v2Scores ? 'v2-results' : 'v2-welcome');
+  };
+
+  const handleBackFromV2Methodology = () => {
     setCurrentScreen(v2Scores ? 'v2-results' : 'v2-welcome');
   };
 
@@ -445,6 +458,7 @@ export default function App() {
             hasSavedProgress={Boolean(savedV2Quiz)}
             onBackToV1={handleBackToV1}
             onViewArchetypes={handleViewV2Gallery}
+            onViewMethodology={handleViewV2Methodology}
           />
         )}
         
@@ -497,6 +511,7 @@ export default function App() {
             onReset={handleResetV2}
             onBackToV1={handleBackToV1}
             onViewArchetypes={handleViewV2Gallery}
+            onViewMethodology={handleViewV2Methodology}
           />
         )}
 
@@ -504,6 +519,13 @@ export default function App() {
           <V2ArchetypeGallery
             lang={lang}
             onBack={handleBackFromV2Gallery}
+          />
+        )}
+
+        {currentScreen === 'v2-methodology' && (
+          <V2MethodologyScreen
+            lang={lang}
+            onBack={handleBackFromV2Methodology}
           />
         )}
 
