@@ -221,7 +221,8 @@ ${t.sharePrompt.en}
 
     ctx.fillStyle = '#9c99b6';
     ctx.font = '24px sans-serif';
-    ctx.fillText('dskb-types.vercel.app', width / 2, 1435);
+    const activeHost = typeof window !== 'undefined' ? window.location.host : 'dskb-v2.vercel.app';
+    ctx.fillText(activeHost, width / 2, 1435);
 
     const link = document.createElement('a');
     link.download = `desire-pattern-${typeCode}.png`;
