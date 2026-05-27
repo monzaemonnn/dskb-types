@@ -1,11 +1,14 @@
 import { useMemo, useRef, useState } from 'react';
-import { v2Dimensions } from '../data/v2Profile';
+import { v2Dimensions, v2ResultFamilies } from '../data/v2Profile';
 import { getPrimaryTraits, getTraitSide, getV2CodeTraits, getV2ResultFamily, getV2TypeCode } from '../utils/v2Scoring';
+import V2RadarChart from './V2RadarChart';
 
 export default function V2ResultsDashboard({ scores, lang, onReset, onBackToV1, onViewArchetypes, onViewMethodology }) {
   const [copySuccess, setCopySuccess] = useState(false);
   const [linkCopySuccess, setLinkCopySuccess] = useState(false);
   const [nativeShareSuccess, setNativeShareSuccess] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
+  const [modalArchetype, setModalArchetype] = useState(null);
   const canvasRef = useRef(null);
   const resultFamily = getV2ResultFamily(scores);
   const primaryTraits = useMemo(() => getPrimaryTraits(scores), [scores]);
@@ -46,7 +49,17 @@ export default function V2ResultsDashboard({ scores, lang, onReset, onBackToV1, 
       ja: 'これはベータ版のエンタメ診断です。医学的・臨床的な診断ではありません。',
       en: 'This is a beta entertainment profile, not a medical or clinical assessment.'
     },
-    balanced: { ja: 'ゆらぎあり', en: 'Flexible signal' }
+    balanced: { ja: 'ゆらぎあり', en: 'Flexible signal' },
+    overview: { ja: '概要', en: 'Overview' },
+    strengthsTab: { ja: '特徴・長所', en: 'Strengths' },
+    cautionsTab: { ja: '注意点', en: 'Cautions' },
+    idealLabel: { ja: '理想的な条件', en: 'Ideal Conditions' },
+    compatTitle: { ja: '相性診断', en: 'Chemistry & Compatibility' },
+    bestMatchLabel: { ja: '最高相性', en: 'Best Match' },
+    abyssMatchLabel: { ja: '沼相性 (危険な引力)', en: 'Abyss Match (Dangerous Pull)' },
+    clickDetail: { ja: 'クリックして詳細を表示', en: 'Click to view details' },
+    close: { ja: '閉じる', en: 'Close' },
+    profileChart: { ja: 'プロフィールチャート', en: 'Profile Chart' }
   };
 
   const getDescription = (dimensionKey, score) => {
@@ -278,6 +291,112 @@ ${t.sharePrompt.en}
         </div>
       </div>
 
+      {/* Profile detail grid */}
+      <div className="results-grid">
+        {/* Radar chart card */}
+        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+          <h2 className="card-title">
+            <span style={{ color: 'var(--color-s)' }}>✦</span>
+            {t.profileChart[lang]}
+          </h2>
+          <V2RadarChart scores={scores} lang={lang} />
+        </div>
+
+        {/* Tabbed detail card */}
+        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="tabs-header">
+            <button
+              className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
+              onClick={() => setActiveTab('overview')}
+            >
+              {t.overview[lang]}
+            </button>
+            <button
+              className={`tab-btn ${activeTab === 'strengths' ? 'active' : ''}`}
+              onClick={() => setActiveTab('strengths')}
+            >
+              {t.strengthsTab[lang]}
+            </button>
+            <button
+              className={`tab-btn ${activeTab === 'cautions' ? 'active' : ''}`}
+              onClick={() => setActiveTab('cautions')}
+            >
+              {t.cautionsTab[lang]}
+            </button>
+          </div>
+
+          <div className="tab-content-panel">
+            {activeTab === 'overview' && resultFamily.description && (
+              <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                <p style={{ color: '#dfdde8', fontSize: '1rem', lineHeight: '1.6' }}>
+                  {resultFamily.description[lang]}
+                </p>
+                {resultFamily.idealConditions && (
+                  <div style={{ marginTop: '10px' }}>
+                    <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-s)', marginBottom: '8px', textTransform: 'uppercase' }}>
+                      {t.idealLabel[lang]}
+                    </h4>
+                    <p className="ideal-env-text">{resultFamily.idealConditions[lang]}</p>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'strengths' && resultFamily.strengths && (
+              <ul className="trait-list animate-fade-in">
+                {resultFamily.strengths[lang].map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ul>
+            )}
+
+            {activeTab === 'cautions' && resultFamily.cautions && (
+              <ul className="trait-list weakness animate-fade-in">
+                {resultFamily.cautions[lang].map((item, i) => (
+                  <li key={i}>{item}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          {/* Compatibility section */}
+          {(resultFamily.bestMatch || resultFamily.abyssMatch) && (
+            <div style={{ marginTop: 'auto', paddingTop: '30px' }}>
+              <h2 className="card-title" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '15px', borderBottom: 'none', paddingBottom: '0', marginBottom: '15px' }}>
+                <span style={{ color: 'var(--color-b)' }}>✦</span>
+                {t.compatTitle[lang]}
+              </h2>
+
+              <div className="compatibility-container">
+                {resultFamily.bestMatch && v2ResultFamilies[resultFamily.bestMatch] && (
+                  <div className="compat-card best" onClick={() => setModalArchetype(resultFamily.bestMatch)}>
+                    <div className="compat-label">{t.bestMatchLabel[lang]}</div>
+                    <div className="compat-type-name">
+                      {v2ResultFamilies[resultFamily.bestMatch].title[lang]}
+                    </div>
+                    <div className="compat-type-desc">
+                      {t.clickDetail[lang]}
+                    </div>
+                  </div>
+                )}
+
+                {resultFamily.abyssMatch && v2ResultFamilies[resultFamily.abyssMatch] && (
+                  <div className="compat-card abyss" onClick={() => setModalArchetype(resultFamily.abyssMatch)}>
+                    <div className="compat-label">{t.abyssMatchLabel[lang]}</div>
+                    <div className="compat-type-name">
+                      {v2ResultFamilies[resultFamily.abyssMatch].title[lang]}
+                    </div>
+                    <div className="compat-type-desc">
+                      {t.clickDetail[lang]}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
       <div className="glass-card actions-card">
         <div className="share-hook-card">
           <span>{t.sharePanelTitle[lang]}</span>
@@ -317,6 +436,60 @@ ${t.sharePrompt.en}
         </button>
         <canvas ref={canvasRef} style={{ display: 'none' }} aria-hidden="true"></canvas>
       </div>
+
+      {/* Compatibility modal */}
+      {modalArchetype && v2ResultFamilies[modalArchetype] && (() => {
+        const modalData = v2ResultFamilies[modalArchetype];
+        return (
+          <div className="modal-overlay" onClick={() => setModalArchetype(null)}>
+            <div className="glass-card modal-content-wrapper animate-fade-in" onClick={(e) => e.stopPropagation()} style={{ border: '1px solid rgba(255, 255, 255, 0.15)' }}>
+              <button className="modal-close-btn" onClick={() => setModalArchetype(null)}>×</button>
+
+              <div className="modal-heading">
+                <div className="results-badge" style={{ display: 'inline-block' }}>
+                  {modalArchetype === resultFamily.bestMatch ? t.bestMatchLabel[lang] : t.abyssMatchLabel[lang]}
+                </div>
+                <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '10px 0' }}>{modalData.title[lang]}</h2>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', fontStyle: 'italic' }}>
+                  " {modalData.tagline[lang]} "
+                </p>
+              </div>
+
+              {modalData.description && (
+                <p style={{ fontSize: '0.95rem', color: '#dfdde8', lineHeight: '1.6', marginBottom: '20px' }}>
+                  {modalData.description[lang]}
+                </p>
+              )}
+
+              {modalData.strengths && (
+                <>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-s)', marginBottom: '8px', textTransform: 'uppercase' }}>
+                    {t.strengthsTab[lang]}
+                  </h4>
+                  <ul className="trait-list" style={{ fontSize: '0.9rem', marginBottom: '20px' }}>
+                    {modalData.strengths[lang].map((item, i) => <li key={i}>{item}</li>)}
+                  </ul>
+                </>
+              )}
+
+              {modalData.cautions && (
+                <>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-d)', marginBottom: '8px', textTransform: 'uppercase' }}>
+                    {t.cautionsTab[lang]}
+                  </h4>
+                  <ul className="trait-list weakness" style={{ fontSize: '0.9rem', marginBottom: '20px' }}>
+                    {modalData.cautions[lang].map((item, i) => <li key={i}>{item}</li>)}
+                  </ul>
+                </>
+              )}
+
+              <button className="btn-primary" onClick={() => setModalArchetype(null)} style={{ width: '100%', marginTop: '10px', padding: '10px 0', borderRadius: '8px', fontSize: '0.95rem' }}>
+                {t.close[lang]}
+              </button>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }

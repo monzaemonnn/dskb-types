@@ -2130,3 +2130,16 @@ body::after {
     font-size: 1.08rem;
   }
 }
+
+.v2-results-container .results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 768px) {
+  .v2-results-container .results-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
