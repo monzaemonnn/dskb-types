@@ -63,9 +63,9 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
 
   return (
     <div className="gallery-container v2-gallery-container">
-      <div className="glass-card" style={{ padding: '30px', textAlign: 'center' }}>
+      <div className="glass-card" style={{ textAlign: 'center' }}>
         <h1 className="gallery-hero-title">{t.title[lang]}</h1>
-        <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem' }}>{t.subtitle[lang]}</p>
+        <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem' }}>{t.subtitle[lang]}</p>
 
         <div className="gallery-controls">
           <input
@@ -77,7 +77,7 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
           />
 
           <div className="gallery-filter">
-            <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{t.filter[lang]}</span>
+            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>{t.filter[lang]}</span>
             <select value={filterDimension} onChange={(event) => setFilterDimension(event.target.value)}>
               <option value="ALL">{t.all[lang]}</option>
               {Object.entries(v2Dimensions).map(([key, dimension]) => (
@@ -94,25 +94,18 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
 
       <div className="gallery-grid v2-archetype-grid">
         {filteredArchetypes.map((archetype) => {
-          const color1 = archetype.isBalanced ? 'var(--color-d)' : v2Dimensions[archetype.traits[0].key].color;
-          const color2 = archetype.isBalanced ? 'var(--color-b)' : v2Dimensions[archetype.traits[1].key].color;
-
           return (
             <article
               key={archetype.key}
               className="gallery-card v2-archetype-card"
               onClick={() => handleOpenDetails(archetype)}
-              style={{
-                '--glow-1': color1,
-                '--glow-2': color2
-              }}
             >
               <div className="gallery-card-code">{archetype.family.title[lang]}</div>
               <p className="gallery-card-tagline">{archetype.family.tagline[lang]}</p>
 
               <div className="v2-gallery-traits">
                 {archetype.isBalanced ? (
-                  <span style={{ borderColor: 'rgba(255, 255, 255, 0.15)', color: '#fff', background: 'rgba(255, 255, 255, 0.08)' }}>
+                  <span style={{ borderColor: 'var(--color-border-subtle)', color: 'var(--color-text-main)', background: 'var(--color-surface-hover)' }}>
                     {t.balanced[lang]}
                   </span>
                 ) : (
@@ -144,30 +137,30 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
           <div
             className="glass-card modal-content-wrapper animate-fade-in"
             onClick={(e) => e.stopPropagation()}
-            style={{ border: '1px solid rgba(255, 255, 255, 0.15)', maxWidth: '640px' }}
+            style={{ maxWidth: '640px' }}
           >
             <button className="modal-close-btn" onClick={handleCloseDetails}>×</button>
             
-            <div className="modal-heading" style={{ textAlign: 'center', marginBottom: '25px' }}>
-              <h2 className="results-type-code" style={{ fontSize: '2.5rem', margin: '10px 0', color: 'var(--text-main)' }}>
+            <div className="modal-heading" style={{ textAlign: 'center', marginBottom: 'var(--spacing-md)' }}>
+              <h2 className="results-type-code" style={{ fontSize: '2rem', margin: 'var(--spacing-xs) 0', color: 'var(--color-text-main)' }}>
                 {selectedArchetype.family.title[lang]}
               </h2>
-              <p className="results-tagline" style={{ fontSize: '1.05rem', fontStyle: 'italic', color: 'var(--text-muted)', margin: '10px 0 0 0' }}>
+              <p className="results-tagline" style={{ fontSize: '1rem', fontStyle: 'italic', color: 'var(--color-text-muted)', margin: 'var(--spacing-xs) 0 0 0' }}>
                 “ {selectedArchetype.family.tagline[lang]} ”
               </p>
             </div>
 
             {/* Description */}
             {selectedArchetype.family.description && (
-              <p style={{ fontSize: '0.95rem', color: '#dfdde8', lineHeight: '1.6', marginBottom: '20px' }}>
+              <p style={{ fontSize: '0.95rem', color: 'var(--color-text-main)', lineHeight: '1.6', marginBottom: 'var(--spacing-md)' }}>
                 {selectedArchetype.family.description[lang]}
               </p>
             )}
 
             {/* Ideal Environment / Conditions */}
             {selectedArchetype.family.idealConditions && (
-              <div style={{ marginBottom: '25px' }}>
-                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-s)', marginBottom: '8px', textTransform: 'uppercase' }}>
+              <div style={{ marginBottom: 'var(--spacing-md)' }}>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--color-secondary)', marginBottom: 'var(--spacing-xs)', textTransform: 'uppercase' }}>
                   {t.idealLabel[lang]}
                 </h4>
                 <p className="ideal-env-text" style={{ fontSize: '0.9rem', margin: 0 }}>
@@ -177,10 +170,10 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
             )}
 
             {/* Grid for strengths & cautions */}
-            <div className="modal-detail-grid" style={{ marginBottom: '25px' }}>
+            <div className="modal-detail-grid" style={{ marginBottom: 'var(--spacing-md)' }}>
               {selectedArchetype.family.strengths && (
                 <div>
-                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-s)', marginBottom: '8px', textTransform: 'uppercase' }}>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--color-secondary)', marginBottom: 'var(--spacing-xs)', textTransform: 'uppercase' }}>
                     {t.strengthsLabel[lang]}
                   </h4>
                   <ul className="trait-list" style={{ fontSize: '0.85rem' }}>
@@ -192,7 +185,7 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
               )}
               {selectedArchetype.family.cautions && (
                 <div>
-                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-d)', marginBottom: '8px', textTransform: 'uppercase' }}>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--color-primary)', marginBottom: 'var(--spacing-xs)', textTransform: 'uppercase' }}>
                     {t.cautionsLabel[lang]}
                   </h4>
                   <ul className="trait-list weakness" style={{ fontSize: '0.85rem' }}>
@@ -205,37 +198,36 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
             </div>
 
             {/* Parametrical Composition */}
-            <div style={{ marginTop: '20px' }}>
-              <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-b)', marginBottom: '12px', textTransform: 'uppercase', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '15px' }}>
+            <div style={{ marginTop: 'var(--spacing-md)' }}>
+              <h4 style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--color-secondary)', marginBottom: 'var(--spacing-sm)', textTransform: 'uppercase', borderTop: '1px solid var(--color-border-subtle)', paddingTop: 'var(--spacing-md)' }}>
                 {selectedArchetype.isBalanced ? t.description[lang] : t.composition[lang]}
               </h4>
 
               {selectedArchetype.isBalanced ? (
-                <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)', padding: '20px', borderRadius: '12px' }}>
-                  <p style={{ fontSize: '0.95rem', color: '#dfdde8', lineHeight: '1.6', margin: 0 }}>
+                <div className="info-item">
+                  <p style={{ fontSize: '0.95rem', color: 'var(--color-text-main)', lineHeight: '1.6', margin: 0 }}>
                     {lang === 'ja'
                       ? '5つのすべての指標において中立または柔軟なバランスを示しており、特定の極端な傾向に固定されません。相手のタイプ、シチュエーション、タイミングに応じて「導く」側にも「委ねる」側にもなれる、非常に柔軟で環境適応力の高いタイプです。'
                       : 'You show a balanced or flexible pattern across all five dimensions. Rather than being fixed in extreme preferences, you adapt fluidly to different partners, scenarios, and contexts, allowing you to easily lead or yield as needed.'}
                   </p>
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xs)' }}>
                   {selectedArchetype.traits.map((trait) => {
                     const dimension = v2Dimensions[trait.key];
                     return (
                       <div
                         key={trait.key}
+                        className="info-item"
                         style={{
-                          background: 'rgba(255,255,255,0.01)',
-                          border: `1px solid ${dimension.color}20`,
-                          padding: '12px 16px',
-                          borderRadius: '8px'
+                          borderColor: `${dimension.color}40`,
+                          background: `${dimension.color}05`
                         }}
                       >
-                        <h5 style={{ color: dimension.color, fontSize: '0.95rem', fontWeight: 700, marginBottom: '4px', marginTop: 0 }}>
+                        <h5 style={{ color: dimension.color, fontSize: '0.9rem', fontWeight: '700', marginBottom: 'var(--spacing-xs)', marginTop: 0 }}>
                           {dimension.title[lang]} — <span style={{ textDecoration: 'underline' }}>{dimension[trait.side][lang]} ({dimension.code[trait.side]})</span>
                         </h5>
-                        <p style={{ fontSize: '0.85rem', color: '#dfdde8', lineHeight: '1.4', margin: 0 }}>
+                        <p style={{ fontSize: '0.85rem', color: 'var(--color-text-main)', lineHeight: '1.4', margin: 0 }}>
                           {dimension.descriptions[trait.side][lang]}
                         </p>
                       </div>
@@ -247,8 +239,8 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
 
             {/* Compatibility pairings */}
             {(selectedArchetype.family.bestMatch || selectedArchetype.family.abyssMatch) && (
-              <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '20px', marginTop: '20px' }}>
-                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-b)', marginBottom: '12px', textTransform: 'uppercase' }}>
+              <div style={{ borderTop: '1px solid var(--color-border-subtle)', paddingTop: 'var(--spacing-md)', marginTop: 'var(--spacing-md)' }}>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: '700', color: 'var(--color-secondary)', marginBottom: 'var(--spacing-sm)', textTransform: 'uppercase' }}>
                   {t.compatibility[lang]}
                 </h4>
                 <div className="modal-match-list">
@@ -257,10 +249,10 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
                       className="modal-match-card best"
                       onClick={() => handleOpenDetailsByKey(selectedArchetype.family.bestMatch)}
                     >
-                      <span style={{ fontSize: '0.7rem', color: 'var(--color-s)', fontWeight: 700, textTransform: 'uppercase' }}>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--color-primary)', fontWeight: '700', textTransform: 'uppercase' }}>
                         {t.bestMatchLabel[lang]}
                       </span>
-                      <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#fff', marginTop: '2px' }}>
+                      <div style={{ fontSize: '0.95rem', fontWeight: '700', color: 'var(--color-text-main)', marginTop: '2px' }}>
                         {v2ResultFamilies[selectedArchetype.family.bestMatch].title[lang]}
                       </div>
                     </div>
@@ -270,10 +262,10 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
                       className="modal-match-card abyss"
                       onClick={() => handleOpenDetailsByKey(selectedArchetype.family.abyssMatch)}
                     >
-                      <span style={{ fontSize: '0.7rem', color: 'var(--color-d)', fontWeight: 700, textTransform: 'uppercase' }}>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--color-secondary)', fontWeight: '700', textTransform: 'uppercase' }}>
                         {t.abyssMatchLabel[lang]}
                       </span>
-                      <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#fff', marginTop: '2px' }}>
+                      <div style={{ fontSize: '0.95rem', fontWeight: '700', color: 'var(--color-text-main)', marginTop: '2px' }}>
                         {v2ResultFamilies[selectedArchetype.family.abyssMatch].title[lang]}
                       </div>
                     </div>
@@ -285,7 +277,7 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
             <button
               className="btn-primary"
               onClick={handleCloseDetails}
-              style={{ width: '100%', marginTop: '30px', padding: '10px 0', borderRadius: '8px', fontSize: '0.95rem' }}
+              style={{ width: '100%', marginTop: 'var(--spacing-lg)' }}
             >
               {t.close[lang]}
             </button>

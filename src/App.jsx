@@ -17,6 +17,7 @@ const QUIZ_STORAGE_KEY = 'dskb-quiz-progress';
 const V2_QUIZ_STORAGE_KEY = 'dskb-v2-quiz-progress';
 
 function clampPercentage(value) {
+  if (value === null || value === undefined || (typeof value === 'string' && value.trim() === '')) return null;
   const numericValue = Number(value);
   if (!Number.isFinite(numericValue)) return null;
   return Math.min(100, Math.max(0, Math.round(numericValue)));
@@ -489,11 +490,11 @@ export default function App() {
         <div className="logo-container" onClick={handleLogoClick}>
           {isV2DefaultDomain() || isV2Screen ? (
             <>
-              <div className="logo-icon" style={{ backgroundColor: '#ff007f', color: '#fff' }}>💋</div>
+              <div className="logo-icon" style={{ backgroundColor: 'var(--color-primary)', color: '#fff' }}>💋</div>
               <h1 className="logo-text">
                 {lang === 'ja' ? '欲望パターン診断' : 'Desire Profile'}
               </h1>
-              <span className="logo-badge" style={{ background: 'linear-gradient(135deg, #ff007f, #7f00ff)', border: 'none' }}>
+              <span className="logo-badge" style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))', color: '#fff', border: 'none' }}>
                 Desire Map
               </span>
             </>
@@ -636,7 +637,7 @@ export default function App() {
       {/* App Footer */}
       <footer className="app-footer">
         <p>© 2026 16 DSKB Types Redesign. Built with React & Vite.</p>
-        <p style={{ marginTop: '5px', opacity: 0.6 }}>
+        <p style={{ marginTop: 'var(--spacing-xs)', opacity: 0.6 }}>
           Disclaimer: This is a parodic personality test designed for adult entertainment and compatibility analysis. 
           No explicit visual content. Original concept inspired by <a href="https://novelgame.jp/games/show/13811" target="_blank" rel="noopener noreferrer">karoooome's original novel game</a>.
         </p>

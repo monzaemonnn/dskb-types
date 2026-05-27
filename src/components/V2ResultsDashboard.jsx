@@ -163,41 +163,40 @@ ${t.sharePrompt.en}
     canvas.width = width;
     canvas.height = height;
 
-    const background = ctx.createLinearGradient(0, 0, width, height);
-    background.addColorStop(0, '#12091d');
-    background.addColorStop(0.5, '#090712');
-    background.addColorStop(1, '#071926');
-    ctx.fillStyle = background;
+    // Void background
+    ctx.fillStyle = '#09090b';
     ctx.fillRect(0, 0, width, height);
 
-    ctx.fillStyle = 'rgba(255, 0, 127, 0.16)';
+    // Subtle Cyan/Pink glow areas (minimal)
+    ctx.fillStyle = 'rgba(236, 72, 153, 0.06)';
     ctx.beginPath();
     ctx.arc(160, 180, 320, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.fillStyle = 'rgba(0, 245, 255, 0.14)';
+    ctx.fillStyle = 'rgba(6, 182, 212, 0.05)';
     ctx.beginPath();
     ctx.arc(1040, 280, 330, 0, Math.PI * 2);
     ctx.fill();
 
-    ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+    // Border
+    ctx.strokeStyle = '#27272a';
     ctx.lineWidth = 4;
     ctx.strokeRect(70, 70, width - 140, height - 140);
 
     ctx.textAlign = 'center';
-    ctx.fillStyle = 'rgba(255,255,255,0.58)';
+    ctx.fillStyle = '#94a3b8';
     ctx.font = '700 28px sans-serif';
     ctx.fillText('DESIRE PATTERN PROFILE V2', width / 2, 170);
 
-    ctx.fillStyle = '#ffffff';
+    ctx.fillStyle = '#f8fafc';
     ctx.font = '900 180px sans-serif';
     ctx.fillText(typeCode, width / 2, 390);
 
-    ctx.fillStyle = '#00f5ff';
+    ctx.fillStyle = '#06b6d4';
     ctx.font = '900 62px sans-serif';
     ctx.fillText(resultFamily.title[lang], width / 2, 500);
 
-    ctx.fillStyle = '#c6c2d6';
+    ctx.fillStyle = '#94a3b8';
     ctx.font = 'italic 34px sans-serif';
     const tagline = resultFamily.tagline[lang];
     const taglineLines = tagline.length > 48 ? [tagline.slice(0, 48), tagline.slice(48)] : [tagline];
@@ -205,21 +204,21 @@ ${t.sharePrompt.en}
 
     codeTraits.forEach((trait, index) => {
       const x = 180 + index * 210;
-      ctx.fillStyle = 'rgba(255,255,255,0.08)';
+      ctx.fillStyle = '#18181b';
       ctx.fillRect(x - 72, 760, 144, 130);
-      ctx.fillStyle = '#00f5ff';
+      ctx.fillStyle = '#06b6d4';
       ctx.font = '900 50px sans-serif';
       ctx.fillText(trait.code, x, 815);
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = '#f8fafc';
       ctx.font = '800 22px sans-serif';
       ctx.fillText(trait.name[lang], x, 858);
     });
 
-    ctx.fillStyle = '#f3f3f6';
+    ctx.fillStyle = '#f8fafc';
     ctx.font = '800 30px sans-serif';
     ctx.fillText(primaryTraits.map(getTraitLabel).join(' / '), width / 2, 1010);
 
-    ctx.fillStyle = '#9c99b6';
+    ctx.fillStyle = '#94a3b8';
     ctx.font = '24px sans-serif';
     const activeHost = typeof window !== 'undefined' ? window.location.host : 'dskb-v2.vercel.app';
     ctx.fillText(activeHost, width / 2, 1435);
@@ -231,7 +230,7 @@ ${t.sharePrompt.en}
   };
 
   return (
-    <div className="results-container v2-results-container">
+    <div className="results-container v2-results-container" style={{ gap: 'var(--spacing-xxl)' }}>
       <div className="glass-card results-header-card v2-results-hero animate-fade-in">
         <div className="results-badge">{t.badge[lang]}</div>
         <div className="v2-type-lockup" aria-label={t.typeLabel[lang]}>
@@ -265,7 +264,7 @@ ${t.sharePrompt.en}
 
       <div className="glass-card v2-meter-card">
         <h2 className="card-title">
-          <span style={{ color: 'var(--color-s)' }}>✦</span>
+          <span style={{ color: 'var(--color-secondary)' }}>✦</span>
           {t.detail[lang]}
         </h2>
 
@@ -283,7 +282,7 @@ ${t.sharePrompt.en}
                   <span>{dimension.right[lang]}</span>
                 </div>
                 <div className="v2-meter-track">
-                  <div className="v2-meter-thumb" style={{ left: `${score}%`, background: dimension.color }}></div>
+                  <div className="v2-meter-thumb" style={{ left: `${score}%`, background: 'var(--color-secondary)' }}></div>
                 </div>
                 <p>{getDescription(key, score)}</p>
               </div>
@@ -293,11 +292,11 @@ ${t.sharePrompt.en}
       </div>
 
       {/* Profile detail grid */}
-      <div className="results-grid">
+      <div className="results-grid" style={{ gap: 'var(--spacing-xl)' }}>
         {/* Radar chart card */}
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
           <h2 className="card-title">
-            <span style={{ color: 'var(--color-s)' }}>✦</span>
+            <span style={{ color: 'var(--color-secondary)' }}>✦</span>
             {t.profileChart[lang]}
           </h2>
           <V2RadarChart scores={scores} lang={lang} />
@@ -328,13 +327,13 @@ ${t.sharePrompt.en}
 
           <div className="tab-content-panel">
             {activeTab === 'overview' && resultFamily.description && (
-              <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-                <p style={{ color: '#dfdde8', fontSize: '1rem', lineHeight: '1.6' }}>
+              <div className="animate-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
+                <p style={{ color: 'var(--color-text-main)', fontSize: '1rem', lineHeight: '1.6' }}>
                   {resultFamily.description[lang]}
                 </p>
                 {resultFamily.idealConditions && (
                   <div style={{ marginTop: '10px' }}>
-                    <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-s)', marginBottom: '8px', textTransform: 'uppercase' }}>
+                    <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-secondary)', marginBottom: '8px', textTransform: 'uppercase' }}>
                       {t.idealLabel[lang]}
                     </h4>
                     <p className="ideal-env-text">{resultFamily.idealConditions[lang]}</p>
@@ -363,8 +362,8 @@ ${t.sharePrompt.en}
           {/* Compatibility section */}
           {(resultFamily.bestMatch || resultFamily.abyssMatch) && (
             <div style={{ marginTop: 'auto', paddingTop: '30px' }}>
-              <h2 className="card-title" style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '15px', borderBottom: 'none', paddingBottom: '0', marginBottom: '15px' }}>
-                <span style={{ color: 'var(--color-b)' }}>✦</span>
+              <h2 className="card-title" style={{ borderTop: '1px solid var(--color-border-subtle)', paddingTop: '15px', borderBottom: 'none', paddingBottom: '0', marginBottom: '15px' }}>
+                <span style={{ color: 'var(--color-secondary)' }}>✦</span>
                 {t.compatTitle[lang]}
               </h2>
 
@@ -406,42 +405,39 @@ ${t.sharePrompt.en}
         </div>
 
         {/* Primary Web Share API button */}
-        <button className="btn-primary" onClick={handleNativeShare} style={{ width: '100%', marginBottom: '12px' }}>
+        <button className="btn-primary" onClick={handleNativeShare} style={{ width: '100%', marginBottom: 'var(--spacing-sm)' }}>
           {nativeShareSuccess ? `✓ ${t.shared[lang]}` : t.nativeShare[lang]}
         </button>
 
-        {/* Social channels (2-column layout) */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
-          <button className="btn-glass share-service-btn x-share" onClick={handleOpenXShare} style={{ margin: 0, width: '100%' }}>
+        {/* Social channels and copy utilities (grid layout) */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: 'var(--spacing-sm)', marginBottom: 'var(--spacing-md)', width: '100%' }}>
+          <button className="btn-glass share-service-btn x-share" onClick={handleOpenXShare}>
             X <span>{t.xShare[lang]}</span>
           </button>
-          <button className="btn-glass share-service-btn line-share" onClick={handleOpenLineShare} style={{ margin: 0, width: '100%' }}>
+          <button className="btn-glass share-service-btn line-share" onClick={handleOpenLineShare}>
             LINE <span>{t.lineShare[lang]}</span>
           </button>
-        </div>
-
-        {/* Copy utilities (2-column layout) */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '20px' }}>
-          <button className="btn-primary" onClick={handleCopyShareText} style={{ margin: 0, width: '100%', fontSize: '0.9rem' }}>
+          <button className="btn-glass" onClick={handleCopyShareText}>
             {copySuccess ? `✓ ${t.copied[lang]}` : t.share[lang]}
           </button>
-          <button className="btn-glass" onClick={handleCopyResultLink} style={{ margin: 0, width: '100%', fontSize: '0.9rem' }}>
+          <button className="btn-glass" onClick={handleCopyResultLink}>
             {linkCopySuccess ? `✓ ${t.copied[lang]}` : t.copyLink[lang]}
           </button>
         </div>
 
         {/* Download section with distinct border styling */}
-        <button className="btn-glass" onClick={handleDownloadCard} style={{ width: '100%', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', border: '1px dashed rgba(255,255,255,0.2)' }}>
+        <button className="btn-glass" onClick={handleDownloadCard} style={{ width: '100%', marginBottom: 'var(--spacing-lg)', borderStyle: 'dashed' }}>
           <span>⬇</span> {t.download[lang]}
         </button>
 
         {/* Lower Navigation & Reset Grid */}
         <div style={{ 
-          borderTop: '1px solid rgba(255,255,255,0.06)', 
+          borderTop: '1px solid var(--color-border-subtle)', 
           paddingTop: '20px', 
           display: 'grid', 
           gridTemplateColumns: hideBackToV1 ? 'repeat(auto-fit, minmax(110px, 1fr))' : '1fr 1fr', 
-          gap: '10px' 
+          gap: '10px',
+          width: '100%'
         }}>
           <button className="btn-glass" onClick={onViewArchetypes} style={{ margin: 0, width: '100%' }}>
             {t.archetypes[lang]}
@@ -453,7 +449,7 @@ ${t.sharePrompt.en}
             {t.retake[lang]}
           </button>
           {!hideBackToV1 && (
-            <button className="btn-glass" onClick={onBackToV1} style={{ margin: 0, width: '100%', borderColor: 'rgba(255,0,127,0.25)', color: '#ff4d94' }}>
+            <button className="btn-glass" onClick={onBackToV1} style={{ margin: 0, width: '100%', borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}>
               {t.back[lang]}
             </button>
           )}
@@ -466,7 +462,7 @@ ${t.sharePrompt.en}
         const modalData = v2ResultFamilies[modalArchetype];
         return (
           <div className="modal-overlay" onClick={() => setModalArchetype(null)}>
-            <div className="glass-card modal-content-wrapper animate-fade-in" onClick={(e) => e.stopPropagation()} style={{ border: '1px solid rgba(255, 255, 255, 0.15)' }}>
+            <div className="glass-card modal-content-wrapper animate-fade-in" onClick={(e) => e.stopPropagation()} style={{ maxWidth: '640px' }}>
               <button className="modal-close-btn" onClick={() => setModalArchetype(null)}>×</button>
 
               <div className="modal-heading">
@@ -474,20 +470,20 @@ ${t.sharePrompt.en}
                   {modalArchetype === resultFamily.bestMatch ? t.bestMatchLabel[lang] : t.abyssMatchLabel[lang]}
                 </div>
                 <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '10px 0' }}>{modalData.title[lang]}</h2>
-                <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', fontStyle: 'italic' }}>
+                <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem', fontStyle: 'italic' }}>
                   " {modalData.tagline[lang]} "
                 </p>
               </div>
 
               {modalData.description && (
-                <p style={{ fontSize: '0.95rem', color: '#dfdde8', lineHeight: '1.6', marginBottom: '20px' }}>
+                <p style={{ fontSize: '0.95rem', color: 'var(--color-text-main)', lineHeight: '1.6', marginBottom: '20px' }}>
                   {modalData.description[lang]}
                 </p>
               )}
 
               {modalData.strengths && (
                 <>
-                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-s)', marginBottom: '8px', textTransform: 'uppercase' }}>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-secondary)', marginBottom: '8px', textTransform: 'uppercase' }}>
                     {t.strengthsTab[lang]}
                   </h4>
                   <ul className="trait-list" style={{ fontSize: '0.9rem', marginBottom: '20px' }}>
@@ -498,7 +494,7 @@ ${t.sharePrompt.en}
 
               {modalData.cautions && (
                 <>
-                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-d)', marginBottom: '8px', textTransform: 'uppercase' }}>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-primary)', marginBottom: '8px', textTransform: 'uppercase' }}>
                     {t.cautionsTab[lang]}
                   </h4>
                   <ul className="trait-list weakness" style={{ fontSize: '0.9rem', marginBottom: '20px' }}>
@@ -507,7 +503,7 @@ ${t.sharePrompt.en}
                 </>
               )}
 
-              <button className="btn-primary" onClick={() => setModalArchetype(null)} style={{ width: '100%', marginTop: '10px', padding: '10px 0', borderRadius: '8px', fontSize: '0.95rem' }}>
+              <button className="btn-primary" onClick={() => setModalArchetype(null)} style={{ width: '100%', marginTop: '10px' }}>
                 {t.close[lang]}
               </button>
             </div>

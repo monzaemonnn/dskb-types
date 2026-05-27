@@ -84,7 +84,7 @@ export default function V2RadarChart({ scores, lang }) {
             key={`grid-${i}`}
             points={getPolygonPoints(r)}
             fill="none"
-            stroke="rgba(255,255,255,0.07)"
+            stroke="var(--color-border-subtle)"
             strokeWidth="1"
           />
         );
@@ -95,21 +95,22 @@ export default function V2RadarChart({ scores, lang }) {
         const angle = (360 / DIMENSION_KEYS.length) * i;
         const { x, y } = polarToCartesian(angle, RADIUS);
         return (
-          <line key={`axis-${i}`} x1={CENTER} y1={CENTER} x2={x} y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+          <line key={`axis-${i}`} x1={CENTER} y1={CENTER} x2={x} y2={y} stroke="var(--color-border-subtle)" strokeWidth="1" />
         );
       })}
 
       {/* Data polygon */}
       <polygon
         points={dataPolygon}
-        fill="rgba(0, 245, 255, 0.15)"
-        stroke="#00f5ff"
+        fill="var(--color-secondary)"
+        fillOpacity="0.3"
+        stroke="var(--color-secondary)"
         strokeWidth="2"
       />
 
       {/* Data points */}
       {dataPoints.map((p, i) => (
-        <circle key={`dot-${i}`} cx={p.x} cy={p.y} r="4" fill="#00f5ff" />
+        <circle key={`dot-${i}`} cx={p.x} cy={p.y} r="4" fill="var(--color-secondary)" />
       ))}
 
       {/* Labels */}
@@ -126,7 +127,7 @@ export default function V2RadarChart({ scores, lang }) {
             x={x}
             y={y}
             textAnchor={textAnchor}
-            fill="var(--text-muted)"
+            fill="var(--color-text-muted)"
             fontSize="12"
             fontWeight="600"
           >

@@ -4,6 +4,7 @@ import { v2Dimensions, v2ResultFamilies, v2TraitMonikers } from '../data/v2Profi
 export const v2ScoreKeys = Object.keys(v2Dimensions);
 
 function clampPercentage(value) {
+  if (value === null || value === undefined || (typeof value === 'string' && value.trim() === '')) return null;
   const numericValue = Number(value);
   if (!Number.isFinite(numericValue)) return null;
   return Math.min(100, Math.max(0, Math.round(numericValue)));

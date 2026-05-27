@@ -130,8 +130,7 @@ export default function QuizScreen({ questions, currentIdx, answers, onAnswer, o
                         width: opt.size === 'large' ? '18px' : opt.size === 'medium' ? '14px' : '10px',
                         height: opt.size === 'large' ? '18px' : opt.size === 'medium' ? '14px' : '10px',
                         borderRadius: '50%',
-                        background: '#fff',
-                        boxShadow: '0 2px 5px rgba(0,0,0,0.2)'
+                        background: 'var(--color-bg)'
                       }} />
                     )}
                   </div>
@@ -158,10 +157,7 @@ export default function QuizScreen({ questions, currentIdx, answers, onAnswer, o
             disabled={currentSelectedValue === null}
             style={{
               opacity: currentSelectedValue !== null ? 1 : 0.4,
-              cursor: currentSelectedValue !== null ? 'pointer' : 'not-allowed',
-              padding: '10px 24px',
-              borderRadius: '8px',
-              fontSize: '0.95rem'
+              cursor: currentSelectedValue !== null ? 'pointer' : 'not-allowed'
             }}
           >
             {t.next[lang]} ✦

@@ -100,52 +100,44 @@ export default function V2MethodologyScreen({ lang, onBack }) {
   };
 
   return (
-    <div className="glass-card welcome-container" style={{ maxWidth: '900px', textAlign: 'left', padding: '40px' }}>
-      <button className="btn-glass" onClick={onBack} style={{ marginBottom: '25px' }}>
+    <div className="glass-card welcome-container v2-welcome-container" style={{ textAlign: 'left' }}>
+      <button className="btn-glass" onClick={onBack} style={{ marginBottom: 'var(--spacing-md)' }}>
         <span style={{ transform: 'scaleX(-1)', display: 'inline-block' }}>✦</span> {t.back[lang]}
       </button>
 
-      <h2 style={{ fontSize: '2.2rem', marginBottom: '14px', color: 'var(--text-main)', fontWeight: 800 }}>
+      <h2 style={{ fontSize: '1.75rem', marginBottom: 'var(--spacing-sm)', color: 'var(--color-text-main)', fontWeight: '700' }}>
         {t.title[lang]}
       </h2>
-      <p style={{ color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: '34px', fontSize: '1.05rem' }}>
+      <p style={{ color: 'var(--color-text-muted)', lineHeight: '1.6', marginBottom: 'var(--spacing-lg)' }}>
         {t.subtitle[lang]}
       </p>
 
-      <div style={{ display: 'grid', gap: '18px', marginBottom: '38px' }}>
+      <div style={{ display: 'grid', gap: 'var(--spacing-md)', marginBottom: 'var(--spacing-xl)' }}>
         {t.sections.map((section) => (
-          <section key={section.title.en} style={{ background: 'rgba(255,255,255,0.015)', border: '1px solid rgba(255,255,255,0.05)', padding: '22px', borderRadius: '12px' }}>
-            <h3 style={{ fontSize: '1.2rem', color: 'var(--color-s)', marginBottom: '10px' }}>{section.title[lang]}</h3>
-            <p style={{ color: 'var(--text-main)', lineHeight: 1.7 }}>{section.body[lang]}</p>
+          <section key={section.title.en} className="info-item">
+            <h3 style={{ fontSize: '1.1rem', color: 'var(--color-secondary)', marginBottom: 'var(--spacing-xs)' }}>{section.title[lang]}</h3>
+            <p style={{ color: 'var(--color-text-main)', lineHeight: '1.6' }}>{section.body[lang]}</p>
           </section>
         ))}
       </div>
 
-      <h3 style={{ fontSize: '1.5rem', color: 'var(--color-d)', marginBottom: '18px' }}>{t.axesTitle[lang]}</h3>
-      <div className="methodology-axes" style={{ display: 'grid', gap: '16px', marginBottom: '38px' }}>
+      <h3 style={{ fontSize: '1.25rem', color: 'var(--color-primary)', marginBottom: 'var(--spacing-md)' }}>{t.axesTitle[lang]}</h3>
+      <div className="methodology-axes" style={{ display: 'grid', gap: 'var(--spacing-md)', marginBottom: 'var(--spacing-xl)' }}>
         {t.axes.map((axis, index) => {
-          const colors = ['var(--color-d)', 'var(--color-s)', 'var(--color-k)', 'var(--color-b)', 'var(--text-main)'];
-          const borders = [
-            'rgba(255, 0, 127, 0.25)',
-            'rgba(0, 245, 255, 0.25)',
-            'rgba(160, 32, 240, 0.25)',
-            'rgba(255, 215, 0, 0.25)',
-            'rgba(255, 255, 255, 0.18)'
-          ];
-          const color = colors[index];
+          const color = index % 2 === 0 ? 'var(--color-primary)' : 'var(--color-secondary)';
           return (
-            <section key={axis.title.en} style={{ background: 'rgba(255,255,255,0.02)', border: `1px solid ${borders[index]}`, padding: '22px', borderRadius: '12px' }}>
-              <h4 style={{ color, fontSize: '1.18rem', marginBottom: '6px' }}>{axis.title[lang]}</h4>
-              <p style={{ color: 'var(--text-muted)', fontWeight: 800, marginBottom: '10px' }}>{axis.poles[lang]}</p>
-              <p style={{ color: 'var(--text-main)', lineHeight: 1.65 }}>{axis.body[lang]}</p>
+            <section key={axis.title.en} className="info-item" style={{ borderColor: color }}>
+              <h4 style={{ color, fontSize: '1.1rem', marginBottom: 'var(--spacing-xs)' }}>{axis.title[lang]}</h4>
+              <p style={{ color: 'var(--color-text-muted)', fontWeight: '700', marginBottom: 'var(--spacing-sm)', fontSize: '0.875rem' }}>{axis.poles[lang]}</p>
+              <p style={{ color: 'var(--color-text-main)', lineHeight: '1.6' }}>{axis.body[lang]}</p>
             </section>
           );
         })}
       </div>
 
-      <section style={{ background: 'rgba(255,0,127,0.055)', border: '1px solid rgba(255,0,127,0.18)', padding: '22px', borderRadius: '12px' }}>
-        <h3 style={{ fontSize: '1.2rem', color: 'var(--color-d)', marginBottom: '10px' }}>{t.caveatTitle[lang]}</h3>
-        <p style={{ color: 'var(--text-main)', lineHeight: 1.7 }}>{t.caveat[lang]}</p>
+      <section className="disclaimer-card" style={{ textAlign: 'left' }}>
+        <h3 className="disclaimer-title" style={{ textAlign: 'left', color: 'var(--color-primary)' }}>{t.caveatTitle[lang]}</h3>
+        <p style={{ color: 'var(--color-text-main)', lineHeight: '1.6' }}>{t.caveat[lang]}</p>
       </section>
     </div>
   );
