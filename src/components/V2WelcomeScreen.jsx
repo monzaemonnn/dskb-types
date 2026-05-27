@@ -48,27 +48,27 @@ export default function V2WelcomeScreen({ lang, onStart, onContinue, hasSavedPro
   };
 
   return (
-    <div className="glass-card welcome-container v2-welcome-container">
-      <div className="results-badge" style={{ display: 'inline-block', marginBottom: 'var(--spacing-md)' }}>
+    <div className="glass-card welcome-container v2-welcome-container animate-premium-fade-in">
+      <div className="results-badge animate-premium-fade-in delay-100" style={{ display: 'inline-block', marginBottom: 'var(--spacing-md)' }}>
         {t.badge[lang]}
       </div>
-      <h1 className="welcome-title">
-        {t.title[lang]}<br />
-        <span>{t.subtitle[lang]}</span>
+      <h1 className="welcome-title animate-premium-fade-in delay-100">
+        <span className="text-gradient">{t.title[lang]}</span><br />
+        <span className="welcome-subtitle-text">{t.subtitle[lang]}</span>
       </h1>
 
-      <p className="welcome-description">{t.description[lang]}</p>
+      <p className="welcome-description animate-premium-fade-in delay-200">{t.description[lang]}</p>
 
       <div className="v2-info-grid">
-        {t.cards.map((card) => (
-          <div className="info-item v2-info-item" key={card.title.en}>
+        {t.cards.map((card, i) => (
+          <div className={`info-item v2-info-item animate-premium-fade-in delay-${300 + i * 100}`} key={card.title.en}>
             <h3>{card.title[lang]}</h3>
             <p>{card.body[lang]}</p>
           </div>
         ))}
       </div>
 
-      <div className="disclaimer-card">
+      <div className="disclaimer-card animate-premium-fade-in delay-500">
         <div className="disclaimer-title">{lang === 'ja' ? '免責・同意事項' : 'Disclaimer & Consent'}</div>
         <p className="disclaimer-text">{t.science[lang]}</p>
         <p className="disclaimer-text" style={{ marginTop: '8px' }}>{t.privacy[lang]}</p>
@@ -82,7 +82,7 @@ export default function V2WelcomeScreen({ lang, onStart, onContinue, hasSavedPro
         </label>
       </div>
 
-      <div className="welcome-action-row">
+      <div className="welcome-action-row animate-premium-fade-in delay-500">
         {hasSavedProgress && (
           <button className="btn-primary" onClick={onContinue}>
             {t.continue[lang]} <span>✦</span>

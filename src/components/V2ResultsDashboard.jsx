@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { v2Dimensions, v2ResultFamilies } from '../data/v2Profile';
 import { getPrimaryTraits, getTraitSide, getV2CodeTraits, getV2ResultFamily, getV2TypeCode } from '../utils/v2Scoring';
 import V2RadarChart from './V2RadarChart';
@@ -14,6 +14,12 @@ export default function V2ResultsDashboard({ scores, lang, onReset, onBackToV1, 
   const primaryTraits = useMemo(() => getPrimaryTraits(scores), [scores]);
   const typeCode = useMemo(() => getV2TypeCode(scores), [scores]);
   const codeTraits = useMemo(() => getV2CodeTraits(scores), [scores]);
+
+  const [animated, setAnimated] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setAnimated(true), 150);
+    return () => clearTimeout(timer);
+  }, []);
 
   const t = {
     badge: { ja: 'V2 診断結果', en: 'V2 Profile Result' },
@@ -231,16 +237,16 @@ ${t.sharePrompt.en}
 
   return (
     <div className="results-container v2-results-container" style={{ gap: 'var(--spacing-xxl)' }}>
-      <div className="glass-card results-header-card v2-results-hero animate-fade-in">
-        <div className="results-badge">{t.badge[lang]}</div>
-        <div className="v2-type-lockup" aria-label={t.typeLabel[lang]}>
+      <div className="glass-card results-header-card v2-results-hero animate-premium-fade-in">
+        <div className="results-badge animate-premium-fade-in delay-100">{t.badge[lang]}</div>
+        <div className="v2-type-lockup animate-premium-fade-in delay-100" aria-label={t.typeLabel[lang]}>
           <span>{t.typeLabel[lang]}</span>
-          <strong>{typeCode}</strong>
+          <strong className="text-gradient">{typeCode}</strong>
         </div>
-        <h1 className="v2-result-title">{resultFamily.title[lang]}</h1>
-        <p className="results-tagline">“ {resultFamily.tagline[lang]} ”</p>
+        <h1 className="v2-result-title animate-premium-fade-in delay-200">{resultFamily.title[lang]}</h1>
+        <p className="results-tagline animate-premium-fade-in delay-200">“ {resultFamily.tagline[lang]} ”</p>
 
-        <div className="v2-code-strip">
+        <div className="v2-code-strip animate-premium-fade-in delay-300">
           {codeTraits.map((trait) => (
             <div className="v2-code-chip" key={trait.key}>
               <strong>{trait.code}</strong>
@@ -248,9 +254,9 @@ ${t.sharePrompt.en}
             </div>
           ))}
         </div>
-        <p className="v2-code-note">{t.codeNote[lang]}</p>
+        <p className="v2-code-note animate-premium-fade-in delay-300">{t.codeNote[lang]}</p>
 
-        <div className="v2-trait-strip" aria-label={t.strongest[lang]}>
+        <div className="v2-trait-strip animate-premium-fade-in delay-400" aria-label={t.strongest[lang]}>
           {primaryTraits.map((trait) => (
             <div className="v2-trait-chip" key={trait.key}>
               <span>{v2Dimensions[trait.key].title[lang]}</span>
@@ -259,10 +265,10 @@ ${t.sharePrompt.en}
           ))}
         </div>
 
-        <p className="v2-beta-note">{t.beta[lang]}</p>
+        <p className="v2-beta-note animate-premium-fade-in delay-400">{t.beta[lang]}</p>
       </div>
 
-      <div className="glass-card v2-meter-card">
+      <div className="glass-card v2-meter-card animate-premium-fade-in delay-100">
         <h2 className="card-title">
           <span style={{ color: 'var(--color-secondary)' }}>✦</span>
           {t.detail[lang]}
@@ -282,7 +288,14 @@ ${t.sharePrompt.en}
                   <span>{dimension.right[lang]}</span>
                 </div>
                 <div className="v2-meter-track">
-                  <div className="v2-meter-thumb" style={{ left: `${score}%`, background: 'var(--color-secondary)' }}></div>
+                  <div 
+                    className="v2-meter-thumb" 
+                    style={{ 
+                      left: `${animated ? score : 50}%`, 
+                      background: 'var(--color-secondary)',
+                      transition: 'left 1.2s cubic-bezier(0.16, 1, 0.3, 1)'
+                    }}
+                  ></div>
                 </div>
                 <p>{getDescription(key, score)}</p>
               </div>
@@ -294,7 +307,7 @@ ${t.sharePrompt.en}
       {/* Profile detail grid */}
       <div className="results-grid" style={{ gap: 'var(--spacing-xl)' }}>
         {/* Radar chart card */}
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
+        <div className="glass-card animate-premium-fade-in delay-200" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-md)' }}>
           <h2 className="card-title">
             <span style={{ color: 'var(--color-secondary)' }}>✦</span>
             {t.profileChart[lang]}
@@ -303,7 +316,7 @@ ${t.sharePrompt.en}
         </div>
 
         {/* Tabbed detail card */}
-        <div className="glass-card" style={{ display: 'flex', flexDirection: 'column' }}>
+        <div className="glass-card animate-premium-fade-in delay-300" style={{ display: 'flex', flexDirection: 'column' }}>
           <div className="tabs-header">
             <button
               className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
@@ -397,7 +410,7 @@ ${t.sharePrompt.en}
         </div>
       </div>
 
-      <div className="glass-card actions-card">
+      <div className="glass-card actions-card animate-premium-fade-in delay-400">
         <div className="share-hook-card">
           <span>{t.sharePanelTitle[lang]}</span>
           <strong>{getShareTitle()}</strong>
@@ -469,7 +482,7 @@ ${t.sharePrompt.en}
                 <div className="results-badge" style={{ display: 'inline-block' }}>
                   {modalArchetype === resultFamily.bestMatch ? t.bestMatchLabel[lang] : t.abyssMatchLabel[lang]}
                 </div>
-                <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '10px 0' }}>{modalData.title[lang]}</h2>
+                <h2 style={{ fontSize: '2rem', fontWeight: 800, margin: '10px 0' }} className="text-gradient">{modalData.title[lang]}</h2>
                 <p style={{ color: 'var(--color-text-muted)', fontSize: '0.95rem', fontStyle: 'italic' }}>
                   " {modalData.tagline[lang]} "
                 </p>
