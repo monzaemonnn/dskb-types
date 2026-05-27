@@ -55,12 +55,6 @@ export default function QuizScreen({ questions, currentIdx, answers, onAnswer, o
       en: "Next",
       ja: "次へ"
     },
-    axisTags: {
-      D: { en: "Distance & Space", ja: "空間と距離感 (D/d)" },
-      S: { en: "Stimulus & Focus", ja: "刺激の方向性 (S/s)" },
-      K: { en: "Relationship Dynamic", ja: "関係性と主導権 (K/k)" },
-      B: { en: "Intimacy Scope", ja: "パートナー範囲 (B/b)" }
-    },
     scale: {
       agreeStrong: { en: "Strongly Agree", ja: "強く賛成" },
       agree: { en: "Agree", ja: "賛成" },
@@ -99,12 +93,9 @@ export default function QuizScreen({ questions, currentIdx, answers, onAnswer, o
       {/* Main question card */}
       <div className="question-card">
         <div>
-          <div className="question-meta-row">
-            <span className={`axis-chip axis-${currentQuestion.axis.toLowerCase()}`}>
-              {t.axisTags[currentQuestion.axis][lang]}
-            </span>
+          <div className="question-meta-row blind-question-meta">
             <span className="question-index-chip">
-              {String(questionNumber).padStart(2, '0')}
+              {lang === 'ja' ? '設問' : 'Item'} {String(questionNumber).padStart(2, '0')}
             </span>
           </div>
           <h2 className="question-text">
