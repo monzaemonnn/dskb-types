@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { v2Dimensions } from '../data/v2Profile';
+import { v2Dimensions, v2ResultFamilies } from '../data/v2Profile';
 import { getV2ArchetypeCatalog } from '../utils/v2Scoring';
 
 export default function V2ArchetypeGallery({ lang, onBack }) {
@@ -8,10 +8,10 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
   const [selectedArchetype, setSelectedArchetype] = useState(null);
 
   const t = {
-    title: { ja: 'V2 アーキタイプ一覧', en: 'V2 Archetype Library' },
+    title: { ja: 'V2 アーキタイプ図鑑', en: 'V2 Archetype Encyclopedia' },
     subtitle: {
-      ja: '5つの指標から生まれる代表的なモニカーを一覧できます。クリックすると詳細を表示します。',
-      en: 'Browse the V2 monikers generated from the five desire dimensions. Click to view details.'
+      ja: '5つの欲望指標から生まれる12のアーキタイプと、それぞれの性質・相性の詳細を閲覧できます。',
+      en: 'Browse all 12 relationship archetypes and explore their traits, descriptions, and compatibility.'
     },
     search: { ja: '名前や指標で検索...', en: 'Search names or traits...' },
     filter: { ja: '指標で絞り込み:', en: 'Filter by dimension:' },
@@ -19,8 +19,14 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
     balanced: { ja: 'バランス型', en: 'Balanced' },
     back: { ja: 'V2に戻る', en: 'Back to V2' },
     close: { ja: '閉じる', en: 'Close' },
-    composition: { ja: '構成指標', en: 'Composition' },
-    description: { ja: '特徴の説明', en: 'Preference Detail' }
+    composition: { ja: '構成指標 (パラメータ)', en: 'Composition' },
+    description: { ja: '特徴の説明', en: 'Preference Detail' },
+    idealLabel: { ja: '理想的な環境・条件', en: 'Ideal Environment' },
+    strengthsLabel: { ja: '特徴・長所', en: 'Key Strengths' },
+    cautionsLabel: { ja: '注意点・リスク', en: 'Cautions & Vulnerabilities' },
+    compatibility: { ja: '相性の良いアーキタイプ', en: 'Compatibility Mapping' },
+    bestMatchLabel: { ja: '最高相性', en: 'Best Match' },
+    abyssMatchLabel: { ja: '沼相性 (危険な引力)', en: 'Abyss Match (Dangerous Pull)' }
   };
 
   const archetypes = useMemo(() => getV2ArchetypeCatalog(), []);
@@ -42,6 +48,13 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
 
   const handleOpenDetails = (archetype) => {
     setSelectedArchetype(archetype);
+  };
+
+  const handleOpenDetailsByKey = (key) => {
+    const arch = archetypes.find((a) => a.key === key);
+    if (arch) {
+      setSelectedArchetype(arch);
+    }
   };
 
   const handleCloseDetails = () => {
@@ -131,7 +144,7 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
           <div
             className="glass-card modal-content-wrapper animate-fade-in"
             onClick={(e) => e.stopPropagation()}
-            style={{ border: '1px solid rgba(255, 255, 255, 0.15)' }}
+            style={{ border: '1px solid rgba(255, 255, 255, 0.15)', maxWidth: '640px' }}
           >
             <button className="modal-close-btn" onClick={handleCloseDetails}>×</button>
             
@@ -144,8 +157,56 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
               </p>
             </div>
 
+            {/* Description */}
+            {selectedArchetype.family.description && (
+              <p style={{ fontSize: '0.95rem', color: '#dfdde8', lineHeight: '1.6', marginBottom: '20px' }}>
+                {selectedArchetype.family.description[lang]}
+              </p>
+            )}
+
+            {/* Ideal Environment / Conditions */}
+            {selectedArchetype.family.idealConditions && (
+              <div style={{ marginBottom: '25px' }}>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-s)', marginBottom: '8px', textTransform: 'uppercase' }}>
+                  {t.idealLabel[lang]}
+                </h4>
+                <p className="ideal-env-text" style={{ fontSize: '0.9rem', margin: 0 }}>
+                  {selectedArchetype.family.idealConditions[lang]}
+                </p>
+              </div>
+            )}
+
+            {/* Grid for strengths & cautions */}
+            <div className="modal-detail-grid" style={{ marginBottom: '25px' }}>
+              {selectedArchetype.family.strengths && (
+                <div>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-s)', marginBottom: '8px', textTransform: 'uppercase' }}>
+                    {t.strengthsLabel[lang]}
+                  </h4>
+                  <ul className="trait-list" style={{ fontSize: '0.85rem' }}>
+                    {selectedArchetype.family.strengths[lang].map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {selectedArchetype.family.cautions && (
+                <div>
+                  <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-d)', marginBottom: '8px', textTransform: 'uppercase' }}>
+                    {t.cautionsLabel[lang]}
+                  </h4>
+                  <ul className="trait-list weakness" style={{ fontSize: '0.85rem' }}>
+                    {selectedArchetype.family.cautions[lang].map((item, i) => (
+                      <li key={i}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            {/* Parametrical Composition */}
             <div style={{ marginTop: '20px' }}>
-              <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--color-s)', marginBottom: '15px', textTransform: 'uppercase', borderBottom: '1px solid rgba(255,255,255,0.05)', paddingBottom: '5px' }}>
+              <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-b)', marginBottom: '12px', textTransform: 'uppercase', borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '15px' }}>
                 {selectedArchetype.isBalanced ? t.description[lang] : t.composition[lang]}
               </h4>
 
@@ -158,24 +219,23 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
                   </p>
                 </div>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {selectedArchetype.traits.map((trait) => {
                     const dimension = v2Dimensions[trait.key];
                     return (
                       <div
                         key={trait.key}
                         style={{
-                          background: 'rgba(255,255,255,0.02)',
-                          border: `1px solid ${dimension.color}30`,
-                          padding: '20px',
-                          borderRadius: '12px',
-                          boxShadow: `0 4px 15px ${dimension.color}05`
+                          background: 'rgba(255,255,255,0.01)',
+                          border: `1px solid ${dimension.color}20`,
+                          padding: '12px 16px',
+                          borderRadius: '8px'
                         }}
                       >
-                        <h5 style={{ color: dimension.color, fontSize: '1.05rem', fontWeight: 700, marginBottom: '6px', marginTop: 0 }}>
+                        <h5 style={{ color: dimension.color, fontSize: '0.95rem', fontWeight: 700, marginBottom: '4px', marginTop: 0 }}>
                           {dimension.title[lang]} — <span style={{ textDecoration: 'underline' }}>{dimension[trait.side][lang]} ({dimension.code[trait.side]})</span>
                         </h5>
-                        <p style={{ fontSize: '0.95rem', color: '#dfdde8', lineHeight: '1.5', margin: 0 }}>
+                        <p style={{ fontSize: '0.85rem', color: '#dfdde8', lineHeight: '1.4', margin: 0 }}>
                           {dimension.descriptions[trait.side][lang]}
                         </p>
                       </div>
@@ -184,6 +244,43 @@ export default function V2ArchetypeGallery({ lang, onBack }) {
                 </div>
               )}
             </div>
+
+            {/* Compatibility pairings */}
+            {(selectedArchetype.family.bestMatch || selectedArchetype.family.abyssMatch) && (
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.05)', paddingTop: '20px', marginTop: '20px' }}>
+                <h4 style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--color-b)', marginBottom: '12px', textTransform: 'uppercase' }}>
+                  {t.compatibility[lang]}
+                </h4>
+                <div className="modal-match-list">
+                  {selectedArchetype.family.bestMatch && v2ResultFamilies[selectedArchetype.family.bestMatch] && (
+                    <div
+                      className="modal-match-card best"
+                      onClick={() => handleOpenDetailsByKey(selectedArchetype.family.bestMatch)}
+                    >
+                      <span style={{ fontSize: '0.7rem', color: 'var(--color-s)', fontWeight: 700, textTransform: 'uppercase' }}>
+                        {t.bestMatchLabel[lang]}
+                      </span>
+                      <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#fff', marginTop: '2px' }}>
+                        {v2ResultFamilies[selectedArchetype.family.bestMatch].title[lang]}
+                      </div>
+                    </div>
+                  )}
+                  {selectedArchetype.family.abyssMatch && v2ResultFamilies[selectedArchetype.family.abyssMatch] && (
+                    <div
+                      className="modal-match-card abyss"
+                      onClick={() => handleOpenDetailsByKey(selectedArchetype.family.abyssMatch)}
+                    >
+                      <span style={{ fontSize: '0.7rem', color: 'var(--color-d)', fontWeight: 700, textTransform: 'uppercase' }}>
+                        {t.abyssMatchLabel[lang]}
+                      </span>
+                      <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#fff', marginTop: '2px' }}>
+                        {v2ResultFamilies[selectedArchetype.family.abyssMatch].title[lang]}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             <button
               className="btn-primary"
