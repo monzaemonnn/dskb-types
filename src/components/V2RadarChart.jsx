@@ -1,9 +1,9 @@
 import { v2Dimensions } from '../data/v2Profile';
 
 const DIMENSION_KEYS = Object.keys(v2Dimensions);
-const SIZE = 300;
+const SIZE = 380;
 const CENTER = SIZE / 2;
-const RADIUS = 110;
+const RADIUS = 100;
 const LEVELS = 4;
 
 function polarToCartesian(angleDeg, radius) {
@@ -22,6 +22,31 @@ function getPolygonPoints(radius) {
   }).join(' ');
 }
 
+function getLabelProps(angle, radius) {
+  const angleRad = ((angle - 90) * Math.PI) / 180;
+  const dist = radius + 15;
+  const x = CENTER + dist * Math.cos(angleRad);
+  const y = CENTER + dist * Math.sin(angleRad);
+
+  let textAnchor = 'middle';
+  let dy = '0.35em';
+
+  const normalized = (angle % 360 + 360) % 360;
+  if (normalized < 10 || normalized > 350) {
+    textAnchor = 'middle';
+    dy = '-0.6em';
+  } else if (normalized > 170 && normalized < 190) {
+    textAnchor = 'middle';
+    dy = '1.2em';
+  } else if (normalized >= 10 && normalized <= 170) {
+    textAnchor = 'start';
+  } else if (normalized >= 190 && normalized <= 350) {
+    textAnchor = 'end';
+  }
+
+  return { x, y, textAnchor, dy };
+}
+
 export default function V2RadarChart({ scores, lang }) {
   const dataPoints = DIMENSION_KEYS.map((key, i) => {
     const score = scores[key] ?? 50;
@@ -33,7 +58,7 @@ export default function V2RadarChart({ scores, lang }) {
   const dataPolygon = dataPoints.map((p) => `${p.x},${p.y}`).join(' ');
 
   return (
-    <svg viewBox={`0 0 ${SIZE} ${SIZE}`} style={{ width: '100%', maxWidth: '280px', margin: '0 auto', display: 'block' }}>
+    <svg viewBox={`0 0 ${SIZE} ${SIZE}`} style={{ width: '100%', maxWidth: '320px', margin: '0 auto', display: 'block' }}>
       {/* Grid levels */}
       {Array.from({ length: LEVELS }, (_, i) => {
         const r = (RADIUS / LEVELS) * (i + 1);
@@ -73,15 +98,15 @@ export default function V2RadarChart({ scores, lang }) {
       {/* Labels */}
       {DIMENSION_KEYS.map((key, i) => {
         const angle = (360 / DIMENSION_KEYS.length) * i;
-        const { x, y } = polarToCartesian(angle, RADIUS + 24);
+        const { x, y, textAnchor, dy } = getLabelProps(angle, RADIUS);
         const dimension = v2Dimensions[key];
         return (
           <text
             key={`label-${i}`}
             x={x}
             y={y}
-            textAnchor="middle"
-            dominantBaseline="middle"
+            textAnchor={textAnchor}
+            dy={dy}
             fill="var(--text-muted)"
             fontSize="10"
             fontWeight="600"
