@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import RadarChart from './RadarChart';
 import { types } from '../data/types';
 
@@ -8,11 +8,10 @@ export default function ResultsDashboard({ typeCode, dPct, sPct, kPct, bPct, lan
   const [modalType, setModalType] = useState(null); // type code of type shown in modal
   const [copySuccess, setCopySuccess] = useState(false);
   const [linkCopySuccess, setLinkCopySuccess] = useState(false);
+  const [nativeShareSuccess, setNativeShareSuccess] = useState(false);
   const canvasRef = useRef(null);
 
-  if (!resultData) return <div>Type not found.</div>;
-
-  const axisSummaries = [
+  const axisSummaries = useMemo(() => [
     {
       key: 'd',
       pct: dPct,
@@ -41,7 +40,7 @@ export default function ResultsDashboard({ typeCode, dPct, sPct, kPct, bPct, lan
       right: lang === 'ja' ? '特定' : 'Beloved',
       className: 'b-axis'
     }
-  ];
+  ], [bPct, dPct, kPct, lang, sPct]);
 
   const t = {
     resultsBadge: { en: "Your Personality Profile", ja: "あなたの診断結果" },
@@ -52,34 +51,84 @@ export default function ResultsDashboard({ typeCode, dPct, sPct, kPct, bPct, lan
     compatibility: { en: "Chemistry & Compatibility", ja: "相性診断" },
     bestMatch: { en: "Best Match (Highest Chemistry)", ja: "最高相性 (最も居心地が良い)" },
     abyssMatch: { en: "Abyss Match (Obsessive/Addictive)", ja: "沼相性 (狂信的・依存しやすい)" },
-    shareText: { en: "Copy Results for Twitter/SNS", ja: "診断結果をコピー (SNSシェア用)" },
+    shareText: { en: "Copy SNS Caption", ja: "SNS文面をコピー" },
+    nativeShare: { en: "Share Result", ja: "結果をシェア" },
+    xShare: { en: "Post", ja: "投稿" },
+    lineShare: { en: "Send", ja: "送る" },
     copyLink: { en: "Copy Result Link", ja: "結果リンクをコピー" },
     downloadText: { en: "Download Profile Card (PNG)", ja: "プロフィール画像をダウンロード" },
     retake: { en: "Retake Quiz", ja: "もう一度診断する" },
     gallery: { en: "Explore All Types", ja: "16タイプ一覧へ" },
     copied: { en: "Copied!", ja: "コピーしました！" },
-    close: { en: "Close", ja: "閉じる" }
+    shared: { en: "Shared!", ja: "共有しました！" },
+    close: { en: "Close", ja: "閉じる" },
+    sharePanelTitle: { en: "Make the timeline guess", ja: "タイムラインに当ててもらう" },
+    sharePanelCopy: {
+      en: "The best posts are a little mysterious: show the code, one tagline, and ask who is compatible.",
+      ja: "タイプ名と一言だけ見せて、相性が良い人を探す形にすると反応されやすいです。"
+    },
+    sharePrompt: {
+      en: "Who has chemistry with this type?",
+      ja: "このタイプと相性いい人、どこにいますか？"
+    }
   };
+
+  const shareTitle = useMemo(() => {
+    if (!resultData) return '16 DSKB Types';
+
+    if (lang === 'ja') {
+      return `私は${typeCode}「${resultData.nameJP}」でした`;
+    }
+
+    return `I got ${typeCode}: ${resultData.nameEN}`;
+  }, [lang, resultData, typeCode]);
+
+  const getResultUrl = () => {
+    if (typeof window === 'undefined') return 'https://dskb-types.vercel.app/';
+    return window.location.href;
+  };
+
+  const getShareText = ({ includeUrl = true } = {}) => {
+    const jpName = resultData.nameJP;
+    const enName = resultData.nameEN;
+    const resultUrl = getResultUrl();
+    const urlLine = includeUrl ? `\n${lang === 'ja' ? '診断はこちら' : 'Take the quiz'}: ${resultUrl}` : '';
+
+    if (lang === 'ja') {
+      return `私の16 DSKB Typesは【${typeCode}: ${jpName}】でした。
+「${resultData.tagline.ja}」
+
+D/S/K/B: ${dPct}/${sPct}/${kPct}/${bPct}
+${t.sharePrompt.ja}
+
+#16DSKBTypes #DSKB診断${urlLine}`;
+    }
+
+    return `I got ${typeCode}: ${enName} on 16 DSKB Types.
+"${resultData.tagline.en}"
+
+D/S/K/B: ${dPct}/${sPct}/${kPct}/${bPct}
+${t.sharePrompt.en}
+
+#16DSKBTypes #DSKBQuiz${urlLine}`;
+  };
+
+  useEffect(() => {
+    if (!resultData) return undefined;
+
+    const previousTitle = document.title;
+    document.title = `${shareTitle} | 16 DSKB Types`;
+
+    return () => {
+      document.title = previousTitle;
+    };
+  }, [resultData, shareTitle]);
+
+  if (!resultData) return <div>Type not found.</div>;
 
   // SNS Share text generator
   const handleCopyShareText = () => {
-    const jpName = resultData.nameJP;
-    const enName = resultData.nameEN;
-    const resultUrl = typeof window !== 'undefined' ? window.location.href : '';
-
-    const text = `【16 DSKB Types (ドスケベ診断)】
-私の診断タイプは【${typeCode} : ${jpName} (${enName})】でした！
-
-📊 各指標の傾向：
-・Distance: Danger ${dPct}% / Deep ${100 - dPct}%
-・Stimulus: Shape ${sPct}% / Story ${100 - sPct}%
-・Kankei: Kanshu ${kPct}% / Kachiku ${100 - kPct}%
-・Buddy: Broad ${bPct}% / Beloved ${100 - bPct}%
-
-✨ キャッチコピー: "${resultData.tagline[lang]}"
-
-#16DSKBTypes #DSKB診断
-テストはこちらから ➡️ ${resultUrl}`;
+    const text = getShareText();
 
     navigator.clipboard.writeText(text).then(() => {
       setCopySuccess(true);
@@ -94,6 +143,37 @@ export default function ResultsDashboard({ typeCode, dPct, sPct, kPct, bPct, lan
       setLinkCopySuccess(true);
       setTimeout(() => setLinkCopySuccess(false), 2000);
     });
+  };
+
+  const handleNativeShare = async () => {
+    if (typeof navigator === 'undefined' || typeof navigator.share !== 'function') {
+      handleCopyShareText();
+      return;
+    }
+
+    try {
+      await navigator.share({
+        title: shareTitle,
+        text: getShareText({ includeUrl: false }),
+        url: getResultUrl()
+      });
+      setNativeShareSuccess(true);
+      setTimeout(() => setNativeShareSuccess(false), 2000);
+    } catch {
+      // The user may cancel the native share sheet. No UI noise needed.
+    }
+  };
+
+  const handleOpenXShare = () => {
+    const shareUrl = new URL('https://twitter.com/intent/tweet');
+    shareUrl.searchParams.set('text', getShareText({ includeUrl: false }));
+    shareUrl.searchParams.set('url', getResultUrl());
+    window.open(shareUrl.toString(), '_blank', 'noopener,noreferrer');
+  };
+
+  const handleOpenLineShare = () => {
+    const linePayload = `${getShareText({ includeUrl: false })}\n${getResultUrl()}`;
+    window.open(`https://line.me/R/msg/text/?${encodeURIComponent(linePayload)}`, '_blank', 'noopener,noreferrer');
   };
 
   // Dynamic canvas-based image downloader
@@ -222,10 +302,11 @@ export default function ResultsDashboard({ typeCode, dPct, sPct, kPct, bPct, lan
     ctx.fillText(lines[1], canvas.width / 2, 685);
 
     // Draw Footer URL
+    const displayHost = typeof window !== 'undefined' ? window.location.host : 'dskb-types.vercel.app';
     ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
     ctx.font = 'bold 11px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('16dskbtypes.com', canvas.width / 2, 790);
+    ctx.fillText(displayHost, canvas.width / 2, 790);
 
     // Create Download Link
     const imageURL = canvas.toDataURL("image/png");
@@ -450,6 +531,26 @@ export default function ResultsDashboard({ typeCode, dPct, sPct, kPct, bPct, lan
 
       {/* Sharing & Reset Actions */}
       <div className="glass-card actions-card">
+        <div className="share-hook-card">
+          <span>{t.sharePanelTitle[lang]}</span>
+          <strong>{t.sharePrompt[lang]}</strong>
+          <p>{t.sharePanelCopy[lang]}</p>
+        </div>
+
+        <button className="btn-primary" onClick={handleNativeShare}>
+          {nativeShareSuccess ? `✓ ${t.shared[lang]}` : t.nativeShare[lang]}
+        </button>
+
+        <button className="btn-glass share-service-btn x-share" onClick={handleOpenXShare}>
+          X
+          <span>{t.xShare[lang]}</span>
+        </button>
+
+        <button className="btn-glass share-service-btn line-share" onClick={handleOpenLineShare}>
+          LINE
+          <span>{t.lineShare[lang]}</span>
+        </button>
+
         <button className="btn-primary" onClick={handleCopyShareText}>
           {copySuccess ? `✓ ${t.copied[lang]}` : t.shareText[lang]}
         </button>
