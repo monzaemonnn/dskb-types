@@ -3,7 +3,7 @@ import { v2Dimensions, v2ResultFamilies } from '../data/v2Profile';
 import { getPrimaryTraits, getTraitSide, getV2CodeTraits, getV2ResultFamily, getV2TypeCode } from '../utils/v2Scoring';
 import V2RadarChart from './V2RadarChart';
 
-export default function V2ResultsDashboard({ scores, lang, onReset, onBackToV1, onViewArchetypes, onViewMethodology }) {
+export default function V2ResultsDashboard({ scores, lang, onReset, onBackToV1, onViewArchetypes, onViewMethodology, hideBackToV1 }) {
   const [copySuccess, setCopySuccess] = useState(false);
   const [linkCopySuccess, setLinkCopySuccess] = useState(false);
   const [nativeShareSuccess, setNativeShareSuccess] = useState(false);
@@ -435,7 +435,13 @@ ${t.sharePrompt.en}
         </button>
 
         {/* Lower Navigation & Reset Grid */}
-        <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+        <div style={{ 
+          borderTop: '1px solid rgba(255,255,255,0.06)', 
+          paddingTop: '20px', 
+          display: 'grid', 
+          gridTemplateColumns: hideBackToV1 ? 'repeat(auto-fit, minmax(110px, 1fr))' : '1fr 1fr', 
+          gap: '10px' 
+        }}>
           <button className="btn-glass" onClick={onViewArchetypes} style={{ margin: 0, width: '100%' }}>
             {t.archetypes[lang]}
           </button>
@@ -445,9 +451,11 @@ ${t.sharePrompt.en}
           <button className="btn-glass" onClick={onReset} style={{ margin: 0, width: '100%' }}>
             {t.retake[lang]}
           </button>
-          <button className="btn-glass" onClick={onBackToV1} style={{ margin: 0, width: '100%', borderColor: 'rgba(255,0,127,0.25)', color: '#ff4d94' }}>
-            {t.back[lang]}
-          </button>
+          {!hideBackToV1 && (
+            <button className="btn-glass" onClick={onBackToV1} style={{ margin: 0, width: '100%', borderColor: 'rgba(255,0,127,0.25)', color: '#ff4d94' }}>
+              {t.back[lang]}
+            </button>
+          )}
         </div>
         <canvas ref={canvasRef} style={{ display: 'none' }} aria-hidden="true"></canvas>
       </div>

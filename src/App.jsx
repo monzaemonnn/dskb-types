@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import WelcomeScreen from './components/WelcomeScreen';
 import QuizScreen from './components/QuizScreen';
 import LoaderScreen from './components/LoaderScreen';
@@ -123,6 +123,20 @@ function publishV2ResultUrl(scores, lang) {
   window.history.replaceState(null, '', `${window.location.pathname}?${params.toString()}`);
 }
 
+function isV2DefaultDomain() {
+  if (typeof window === 'undefined') return false;
+  const hostname = window.location.hostname.toLowerCase();
+  const searchParams = new URLSearchParams(window.location.search);
+  return (
+    hostname.includes('v2') ||
+    hostname.includes('desire') ||
+    hostname.includes('erosphere') ||
+    searchParams.get('v') === '2' ||
+    searchParams.get('version') === '2' ||
+    searchParams.get('mode') === 'v2'
+  );
+}
+
 export default function App() {
   const [initialAppState] = useState(() => {
     const sharedV2Result = getSharedV2ResultFromUrl();
@@ -140,9 +154,13 @@ export default function App() {
     };
   });
 
-  const [currentScreen, setCurrentScreen] = useState(
-    initialAppState.sharedV2Result ? 'v2-results' : initialAppState.sharedResult ? 'results' : initialAppState.initialView?.screen || 'welcome'
-  ); // welcome, quiz, loader, results, gallery, methodology, v2-welcome, v2-quiz, v2-results, v2-gallery, v2-methodology
+  const [currentScreen, setCurrentScreen] = useState(() => {
+    if (initialAppState.sharedV2Result) return 'v2-results';
+    if (initialAppState.sharedResult) return 'results';
+    if (initialAppState.initialView?.screen) return initialAppState.initialView.screen;
+    if (isV2DefaultDomain()) return 'v2-welcome';
+    return 'welcome';
+  }); // welcome, quiz, loader, results, gallery, methodology, v2-welcome, v2-quiz, v2-results, v2-gallery, v2-methodology
   const [lang, setLang] = useState(
     initialAppState.sharedV2Result?.lang || initialAppState.sharedResult?.lang || initialAppState.initialView?.lang || initialAppState.savedQuiz?.lang || initialAppState.savedV2Quiz?.lang || 'ja'
   ); // 'ja' or 'en'
@@ -157,6 +175,51 @@ export default function App() {
   const [typeCode, setTypeCode] = useState(initialAppState.sharedResult?.typeCode || '');
   const [percentages, setPercentages] = useState(initialAppState.sharedResult?.percentages || { dPct: 50, sPct: 50, kPct: 50, bPct: 50 });
   const [v2Scores, setV2Scores] = useState(initialAppState.sharedV2Result?.scores || null);
+
+  // Manage metadata side-effects (SEO & OG Tags) based on screen/domain
+  useEffect(() => {
+    const isV2 = ['v2-welcome', 'v2-quiz', 'v2-results', 'v2-gallery', 'v2-methodology'].includes(currentScreen);
+    
+    let title = '';
+    let desc = '';
+    
+    if (isV2) {
+      title = lang === 'ja' 
+        ? '欲望パターン診断 — Desire Pattern Profile' 
+        : 'Desire Pattern Profile — 5-Dimension Relationship Archetype Test';
+      desc = lang === 'ja'
+        ? '性科学や関係性研究に基づいた30問の性格・相性診断。空想と現実、着火とブレーキ、体感と物語、主導権、深さと変化の5軸から、あなたの欲望パターンと12のアーキタイプを診断します。'
+        : 'A 30-item relationship and compatibility profile based on relational research. Discover your desire pattern and relationship archetype through five dimensions.';
+    } else {
+      title = lang === 'ja'
+        ? '16 DSKB Types - 16タイプ性格・相性傾向診断'
+        : '16 DSKB Types - 16-Type Relationship Personality Test';
+      desc = lang === 'ja'
+        ? '16タイプ DSKB(ドスケベ)診断へようこそ！4つの指標（空間・刺激・主導権・向き合い方）であなたの深層心理と相性傾向を分析します。'
+        : 'Welcome to the 16 DSKB Types test! Analyze your deep relational preferences and compatibility across 4 main axes.';
+    }
+    
+    document.title = title;
+    
+    const updateMeta = (selector, attribute, value) => {
+      const el = document.querySelector(selector);
+      if (el) el.setAttribute(attribute, value);
+    };
+    
+    updateMeta('meta[name="description"]', 'content', desc);
+    updateMeta('meta[property="og:title"]', 'content', title);
+    updateMeta('meta[property="og:description"]', 'content', desc);
+    updateMeta('meta[name="twitter:title"]', 'content', title);
+    updateMeta('meta[name="twitter:description"]', 'content', desc);
+    
+    if (isV2) {
+      updateMeta('meta[property="og:image"]', 'content', 'https://dskb-types.vercel.app/og-v2.png');
+      updateMeta('meta[name="twitter:image"]', 'content', 'https://dskb-types.vercel.app/og-v2.png');
+    } else {
+      updateMeta('meta[property="og:image"]', 'content', 'https://dskb-types.vercel.app/og-dskb.png');
+      updateMeta('meta[name="twitter:image"]', 'content', 'https://dskb-types.vercel.app/og-dskb.png');
+    }
+  }, [currentScreen, lang]);
 
   const persistQuizProgress = (nextAnswers, nextQuestionIdx, nextLang = lang) => {
     const progress = {
@@ -353,7 +416,7 @@ export default function App() {
     setTypeCode('');
     setV2Scores(null);
     setPercentages({ dPct: 50, sPct: 50, kPct: 50, bPct: 50 });
-    setCurrentScreen('welcome');
+    setCurrentScreen(isV2DefaultDomain() ? 'v2-welcome' : 'welcome');
   };
 
   const handleResetV2 = () => {
@@ -364,6 +427,14 @@ export default function App() {
     setV2QuestionIdx(0);
     setV2Scores(null);
     setCurrentScreen('v2-welcome');
+  };
+
+  const handleLogoClick = () => {
+    if (isV2DefaultDomain()) {
+      handleResetV2();
+    } else {
+      handleReset();
+    }
   };
 
   const handleViewGallery = () => {
@@ -409,14 +480,30 @@ export default function App() {
     setCurrentScreen('welcome');
   };
 
+  const isV2Screen = ['v2-welcome', 'v2-quiz', 'v2-results', 'v2-gallery', 'v2-methodology'].includes(currentScreen);
+
   return (
     <div className="app-container">
       {/* App Header */}
       <header className="app-header">
-        <div className="logo-container" onClick={handleReset}>
-          <div className="logo-icon">DS</div>
-          <h1 className="logo-text">16 DSKB Types</h1>
-          <span className="logo-badge">R-18 Lite</span>
+        <div className="logo-container" onClick={handleLogoClick}>
+          {isV2DefaultDomain() || isV2Screen ? (
+            <>
+              <div className="logo-icon" style={{ backgroundColor: '#ff007f', color: '#fff' }}>💋</div>
+              <h1 className="logo-text">
+                {lang === 'ja' ? '欲望パターン診断' : 'Desire Profile'}
+              </h1>
+              <span className="logo-badge" style={{ background: 'linear-gradient(135deg, #ff007f, #7f00ff)', border: 'none' }}>
+                Desire Map
+              </span>
+            </>
+          ) : (
+            <>
+              <div className="logo-icon">DS</div>
+              <h1 className="logo-text">16 DSKB Types</h1>
+              <span className="logo-badge">R-18 Lite</span>
+            </>
+          )}
         </div>
         
         <div className="header-controls">
@@ -459,6 +546,7 @@ export default function App() {
             onBackToV1={handleBackToV1}
             onViewArchetypes={handleViewV2Gallery}
             onViewMethodology={handleViewV2Methodology}
+            hideBackToV1={isV2DefaultDomain()}
           />
         )}
         
@@ -512,6 +600,7 @@ export default function App() {
             onBackToV1={handleBackToV1}
             onViewArchetypes={handleViewV2Gallery}
             onViewMethodology={handleViewV2Methodology}
+            hideBackToV1={isV2DefaultDomain()}
           />
         )}
 

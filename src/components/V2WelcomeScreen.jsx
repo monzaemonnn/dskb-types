@@ -1,35 +1,35 @@
 import { useState } from 'react';
 
-export default function V2WelcomeScreen({ lang, onStart, onContinue, hasSavedProgress, onBackToV1, onViewArchetypes, onViewMethodology }) {
+export default function V2WelcomeScreen({ lang, onStart, onContinue, hasSavedProgress, onBackToV1, onViewArchetypes, onViewMethodology, hideBackToV1 }) {
   const [agreedDisclaimer, setAgreedDisclaimer] = useState(false);
 
   const t = {
-    badge: { ja: 'V2 Beta / 研究ベースの新診断', en: 'V2 Beta / Research-Informed Profile' },
+    badge: { ja: '研究ベースの心理・関係性分析', en: 'Research-Informed Relationship Profile' },
     title: { ja: '欲望パターン診断', en: 'Desire Pattern Profile' },
     subtitle: {
       ja: '空想・安心・刺激・関係性から、あなたの欲望の動き方を見る30問。',
       en: 'A 30-item profile for how desire moves through fantasy, safety, cues, and relationships.'
     },
     description: {
-      ja: 'V2はDSKBとは別の新しい診断です。空想と現実の距離、気持ちが入る条件、体感と物語、主導権、深さと変化の5つの指標から、あなたの欲望パターンを分析します。',
-      en: 'V2 is a new instrument separate from DSKB. It maps five dimensions: fantasy-practice distance, spark and brakes, body vs story, agency, and depth vs variety.'
+      ja: '本診断はDSKBとは別の新しいアプローチです。空想と現実の距離、気持ちが入る条件、体感と物語、主導権、深さと変化の5つの指標から、あなたの欲望パターンを多角的に分析します。',
+      en: 'This is a dedicated instrument mapping five dimensions: fantasy-practice distance, spark and brakes, body vs story, agency, and depth vs variety.'
     },
     science: {
-      ja: '性科学・関係性研究を参考にしたエンタメ診断です。診断・治療・専門的助言ではありません。',
-      en: 'This is an entertainment profile informed by sexology and relationship research. It is not diagnosis, therapy, or professional advice.'
+      ja: '性科学・関係性研究の知見をもとに設計された自己理解エンタメ診断です。医学的な診断や専門的助言を提供するものではありません。',
+      en: 'This is an self-understanding tool informed by sexology and relationship research. It does not provide medical diagnosis or professional advice.'
     },
     privacy: {
-      ja: 'このベータ版では回答は端末内に保存されるだけで、サーバーには送信されません。',
-      en: 'In this beta, answers are stored only on this device and are not sent to a server.'
+      ja: '回答データはすべてご利用の端末内に保存され、外部サーバーに送信されることはありません。',
+      en: 'Your answers are saved locally on this device and are never sent to a server.'
     },
     agree: {
       ja: '内容を理解し、18歳以上として開始する',
       en: 'I understand and want to proceed as an adult'
     },
-    start: { ja: 'V2診断を開始', en: 'Start V2 Profile' },
-    continue: { ja: 'V2を途中から再開', en: 'Continue V2 Profile' },
+    start: { ja: '診断を開始', en: 'Start Profile' },
+    continue: { ja: '途中から再開', en: 'Continue Profile' },
     archetypes: { ja: 'アーキタイプ一覧', en: 'Explore archetypes' },
-    methodology: { ja: 'V2方法論', en: 'V2 Methodology' },
+    methodology: { ja: '診断方法論について', en: 'Methodology' },
     back: { ja: 'DSKBに戻る', en: 'Back to DSKB' },
     cards: [
       {
@@ -49,7 +49,7 @@ export default function V2WelcomeScreen({ lang, onStart, onContinue, hasSavedPro
 
   return (
     <div className="glass-card welcome-container v2-welcome-container">
-      <div className="welcome-badge v2-beta-badge">{t.badge[lang]}</div>
+      <div className="welcome-badge v2-beta-badge" style={{ background: 'rgba(255, 0, 127, 0.15)', color: '#ff4d94', border: '1px solid rgba(255, 0, 127, 0.3)' }}>{t.badge[lang]}</div>
       <h1 className="welcome-title">
         {t.title[lang]}<br />
         <span style={{ fontSize: '1.35rem', fontWeight: 600 }}>{t.subtitle[lang]}</span>
@@ -67,7 +67,7 @@ export default function V2WelcomeScreen({ lang, onStart, onContinue, hasSavedPro
       </div>
 
       <div className="disclaimer-card">
-        <div className="disclaimer-title">{lang === 'ja' ? 'ベータ版の注意' : 'Beta Notice'}</div>
+        <div className="disclaimer-title">{lang === 'ja' ? '免責・同意事項' : 'Disclaimer & Consent'}</div>
         <p className="disclaimer-text">{t.science[lang]}</p>
         <p className="disclaimer-text" style={{ marginTop: '8px' }}>{t.privacy[lang]}</p>
         <label className="consent-row">
@@ -94,9 +94,11 @@ export default function V2WelcomeScreen({ lang, onStart, onContinue, hasSavedPro
         >
           {t.start[lang]} <span>✦</span>
         </button>
-        <button className="btn-glass" onClick={onBackToV1}>
-          {t.back[lang]}
-        </button>
+        {!hideBackToV1 && (
+          <button className="btn-glass" onClick={onBackToV1}>
+            {t.back[lang]}
+          </button>
+        )}
         <button className="btn-glass" onClick={onViewArchetypes}>
           {t.archetypes[lang]}
         </button>
